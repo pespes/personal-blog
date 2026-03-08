@@ -21,7 +21,7 @@ src/
   components/     # 13 Astro components (Header, Card, Tag, Datetime, etc.)
   layouts/        # Layout, PostDetails, Main, AboutLayout
   pages/          # Routes — static and dynamic
-    api/          # Keystatic CMS API endpoint
+    api/          # (Keystatic API is injected automatically by @keystatic/astro — no manual file needed)
     posts/        # Blog post list + detail pages
     tags/         # Tag index + filtered post pages
   data/blog/      # Markdown blog posts (content collection)
