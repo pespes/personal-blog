@@ -1,9 +1,11 @@
 import type { APIRoute } from "astro";
-import { generateOgImageForSite } from "@/utils/generateOgImages";
+import fs from "fs";
+import path from "path";
 
 export const GET: APIRoute = async () => {
-  const buffer = await generateOgImageForSite();
-  return new Response(new Uint8Array(buffer), {
-    headers: { "Content-Type": "image/png" },
+  // Return the default static OG image
+  const buffer = fs.readFileSync(path.resolve("./public/astropaper-og.jpg"));
+  return new Response(buffer, {
+    headers: { "Content-Type": "image/jpeg" },
   });
 };
