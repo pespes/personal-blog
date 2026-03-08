@@ -4,7 +4,7 @@
   "version": "5.5.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && cp -r dist/pagefind public/",
+    "build": "SKIP_KEYSTATIC=true astro check && SKIP_KEYSTATIC=true astro build && pagefind --site dist && cp -r dist/pagefind public/",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
@@ -13,14 +13,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^12.6.12",
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.14",
     "@astrojs/sitemap": "^3.6.0",
     "@keystatic/astro": "^5.0.6",
     "@keystatic/core": "^0.5.48",
-    "@resvg/resvg-js": "^2.6.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.16.6",
@@ -30,6 +28,7 @@
     "react-dom": "^19.2.4",
     "remark-collapse": "^0.1.2",
     "remark-toc": "^9.0.0",
+    "@resvg/resvg-js": "^2.6.2",
     "satori": "^0.18.3",
     "sharp": "^0.34.5",
     "slugify": "^1.6.6"

@@ -1,6 +1,4 @@
 import rss from "@astrojs/rss";
-
-export const prerender = true;
 import { getCollection } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import getSortedPosts from "@/utils/getSortedPosts";

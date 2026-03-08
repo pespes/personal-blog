@@ -14,8 +14,6 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { SITE } from "./src/config";
 
-import cloudflare from "@astrojs/cloudflare";
-
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
@@ -23,7 +21,7 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    keystatic(),
+    ...(process.env.SKIP_KEYSTATIC ? [] : [keystatic()]),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
@@ -47,14 +45,6 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    optimizeDeps: {
-      exclude: ["@resvg/resvg-js"],
-    },
-    build: {
-      rollupOptions: {
-        external: ["@resvg/resvg-js"],
-      },
-    },
   },
 
   image: {
@@ -85,7 +75,4 @@ export default defineConfig({
       },
     ],
   },
-  adapter: cloudflare({
-    imageService: "cloudflare",
-  }),
 });
