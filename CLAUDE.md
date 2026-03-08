@@ -16,7 +16,7 @@ pnpm sync         # Sync Astro content types
 
 ## Architecture
 
-```
+```text
 src/
   components/     # 13 Astro components (Header, Card, Tag, Datetime, etc.)
   layouts/        # Layout, PostDetails, Main, AboutLayout
@@ -34,7 +34,7 @@ src/
 ## Key Config Files
 
 | File | Purpose |
-|------|---------|
+| --- | --- |
 | `src/config.ts` | Site URL, author, timezone, feature flags — **needs personalization** |
 | `src/constants.ts` | Social links and edit-post URL — **needs personalization** |
 | `astro.config.ts` | Integrations, markdown/Shiki, Cloudflare adapter, experimental fonts |
@@ -64,12 +64,41 @@ Cloudflare Pages via `@astrojs/cloudflare` adapter. Push to `main` → auto-depl
 Build command for Cloudflare: `pnpm build`
 Output directory: `dist/`
 
+## Media Components
+
+Posts can be written as `.mdx` files to use components. Import at the top of the file:
+
+```mdx
+import Video from '@/components/Video.astro';
+import Figure from '@/components/Figure.astro';
+```
+
+**Video** — responsive YouTube or Vimeo embed (16:9):
+
+```mdx
+<Video id="dQw4w9WgXcQ" title="My video" />
+<Video id="123456789" platform="vimeo" title="My Vimeo video" />
+```
+
+**Figure** — optimized image with optional caption:
+
+```mdx
+{/* Remote URL */}
+<Figure src="https://example.com/photo.jpg" alt="Description" caption="Photo credit: ..." />
+
+{/* Local asset (imported at top of file) */}
+import myPhoto from '@/assets/images/photo.jpg';
+<Figure src={myPhoto} alt="Description" caption="Caption text" />
+```
+
+Local assets are processed through Astro's image pipeline (resized, format-converted). Remote URLs use lazy-loaded `<img>` tags.
+
 ## Gotchas
 
 - **Pagefind search only works after a full build** — it's not available in `pnpm dev`. The build step runs pagefind and copies the index to `public/pagefind/`.
 - **`@resvg/resvg-js` is externalized** in Vite config — required for OG image generation on Cloudflare. Don't move it to bundled deps.
 - **`src/config.ts` still has AstroPaper defaults** — `website`, `author`, `profile`, `editPost.url`, and `timezone` all need updating before going live.
-- **`dynamicOgImage: false`** by default — OG images must be provided manually per post, or set to `true` to auto-generate via Satori.
+- **Dynamic OG images are enabled** — auto-generated at build time via Satori for posts without an explicit `ogImage`. Adds ~1s per post to build time.
 - **Nested blog directories** — subdirectories prefixed with `_` (e.g., `_releases/`) are excluded from URL slugs. Other nested dirs are included.
 - **Scheduled posts** — posts with `pubDatetime` up to 15 minutes in the future will still be published (controlled by `scheduledPostMargin` in `config.ts`).
 

@@ -2,6 +2,7 @@ import { defineConfig, envField, fontProviders } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import keystatic from "@keystatic/astro";
 import react from "@astrojs/react";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
@@ -21,6 +22,7 @@ export default defineConfig({
 
   integrations: [
     react(),
+    mdx(),
     keystatic(),
     sitemap({
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
