@@ -1,5 +1,7 @@
 # Personal Blog
 
+Built by Peter Esveld
+
 A personal blog built with [Astro](https://astro.build/) and deployed to [Cloudflare Pages](https://pages.cloudflare.com/). Based on the [AstroPaper](https://github.com/satnaing/astro-paper) theme.
 
 ## Stack
