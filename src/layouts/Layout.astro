@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
+import { transition } from "@/utils/transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import "@/styles/global.css";
@@ -63,7 +64,7 @@ const structuredData = {
 
     <!-- Load Font -->
     <Font
-      cssVariable="--font-google-sans-code"
+      cssVariable="--font-inter"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
 
@@ -167,7 +168,10 @@ const structuredData = {
       })();
     </script>
   </head>
-  <body>
+  <!-- Controls the root (unnamed) page transition. Named element transitions
+       (transition:name) are controlled separately in each component via
+       transition:animate={transition} — see src/utils/transitions.ts. -->
+  <body transition:animate={transition}>
     <slot />
 
     <!-- Load full theme logic -->
