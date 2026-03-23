@@ -142,7 +142,6 @@ If your logo is an image but not SVG, you can use Astro's Image component.
 
 - Then, replace `{SITE.title}` with imported logo.
 
-  <!-- prettier-ignore -->
   ```html
   <a
     href="/"

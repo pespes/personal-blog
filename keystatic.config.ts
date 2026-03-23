@@ -60,8 +60,15 @@ export default config({
         timezone: fields.text({
           label: 'Timezone',
         }),
-        content: fields.markdoc({
+        content: fields.mdx({
           label: 'Content',
+          extension: 'md',
+          options: {
+            image: {
+              directory: 'src/assets/images/posts',
+              publicPath: '../../assets/images/posts/',
+            },
+          },
         }),
       },
     }),

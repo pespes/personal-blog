@@ -59,39 +59,34 @@ The Keystatic CMS UI is available at `/keystatic` in dev mode (`pnpm dev`).
 
 ## Deployment
 
-Cloudflare Pages via `@astrojs/cloudflare` adapter. Push to `main` → auto-deploy (if CI passes).
+Cloudflare Pages as a fully static site (no SSR adapter). Push to `main` → auto-deploy.
 
 Build command for Cloudflare: `pnpm build`
 Output directory: `dist/`
 
-## Media Components
+**Required Cloudflare Pages build environment variable:**
 
-Posts can be written as `.mdx` files to use components. Import at the top of the file:
+- `SKIP_KEYSTATIC=true` — excludes Keystatic from the production build (it injects server-side routes that break static builds)
+
+## Media
+
+**Images** — use standard Markdown syntax. Local images in `src/assets/images/` are processed through Astro's image pipeline (resized, format-converted). Use a relative path from the post file:
+
+```md
+![Alt text](../../assets/images/posts/my-image.jpg)
+*Optional caption in italics below.*
+```
+
+Images can also be uploaded directly via the Keystatic editor — they are saved to `src/assets/images/posts/` automatically.
+
+**Video** — use the `Video` component in `.mdx` posts for responsive YouTube or Vimeo embeds (16:9):
 
 ```mdx
 import Video from '@/components/Video.astro';
-import Figure from '@/components/Figure.astro';
-```
 
-**Video** — responsive YouTube or Vimeo embed (16:9):
-
-```mdx
 <Video id="dQw4w9WgXcQ" title="My video" />
 <Video id="123456789" platform="vimeo" title="My Vimeo video" />
 ```
-
-**Figure** — optimized image with optional caption:
-
-```mdx
-{/* Remote URL */}
-<Figure src="https://example.com/photo.jpg" alt="Description" caption="Photo credit: ..." />
-
-{/* Local asset (imported at top of file) */}
-import myPhoto from '@/assets/images/photo.jpg';
-<Figure src={myPhoto} alt="Description" caption="Caption text" />
-```
-
-Local assets are processed through Astro's image pipeline (resized, format-converted). Remote URLs use lazy-loaded `<img>` tags.
 
 ## Gotchas
 
