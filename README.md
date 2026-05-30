@@ -14,7 +14,7 @@ A personal blog built with [Astro](https://astro.build/) and deployed to [Cloudf
 
 ## Setup
 
-**Prerequisites:** [pnpm](https://pnpm.io/), Node 20+
+**Prerequisites:** [pnpm](https://pnpm.io/), Node `22.12.0`+ (required by Astro 6)
 
 ```bash
 # Clone and install
@@ -30,13 +30,14 @@ The dev server runs at `http://localhost:4321`. The Keystatic CMS is available a
 
 ## Commands
 
-| Command        | Description                                        |
-| -------------- | -------------------------------------------------- |
-| `pnpm dev`     | Start dev server at localhost:4321                 |
-| `pnpm build`   | Type-check, build, run Pagefind, copy search index |
-| `pnpm preview` | Preview production build locally                   |
-| `pnpm lint`    | Run ESLint                                         |
-| `pnpm format`  | Format with Prettier                               |
+| Command                   | Description                                        |
+| ------------------------- | -------------------------------------------------- |
+| `pnpm dev`                | Start dev server at localhost:4321                 |
+| `pnpm build`              | Type-check, build, run Pagefind, copy search index |
+| `pnpm preview`            | Preview production build locally (Astro)           |
+| `pnpm preview:cloudflare` | Preview production build via Wrangler (port 8787)  |
+| `pnpm lint`               | Run ESLint                                         |
+| `pnpm format`             | Format with Prettier                               |
 
 ## Configuration
 
@@ -68,48 +69,36 @@ featured: false
 Optional fields:
 
 ```yaml
-modDatetime: 2025-06-01T10:00:00Z   # Shows "updated" date
-ogImage: /assets/my-image.jpg        # Custom OG image (otherwise auto-generated)
-timezone: America/New_York           # Override global timezone for this post
-hideEditPost: true                   # Hide the "Edit page" link
-canonicalURL: https://...            # If cross-posted elsewhere
+modDatetime: 2025-06-01T10:00:00Z # Shows "updated" date
+ogImage: ../../assets/images/my-image.png # Custom OG image (relative path)
+timezone: America/New_York # Override global timezone for this post
+hideEditPost: true # Hide the "Edit page" link
+canonicalURL: https://... # If cross-posted elsewhere
 ```
 
 ### Images
 
-Standard Markdown image syntax works everywhere:
+Standard Markdown image syntax works everywhere, including remote URLs:
 
 ```markdown
 ![Alt text](https://example.com/photo.jpg)
 ```
 
-For optimized images with captions, use an `.mdx` post with the `Figure` component:
+Local images live in `src/assets/images/` and are processed through Astro's image pipeline (resized and format-converted at build time). Reference them with the `@/assets/...` alias or a relative path from the post:
 
-```mdx
-import Figure from '@/components/Figure.astro';
-
-<Figure
-  src="https://example.com/photo.jpg"
-  alt="Description"
-  caption="Photo credit: ..."
-/>
+```markdown
+![Alt text](@/assets/images/my-photo.png)
+![Alt text](../../assets/images/my-photo.png)
 ```
 
-Local assets (in `src/assets/images/`) are processed through Astro's image pipeline:
-
-```mdx
-import Figure from '@/components/Figure.astro';
-import myPhoto from '@/assets/images/photo.jpg';
-
-<Figure src={myPhoto} alt="Description" caption="Caption text" />
-```
+Images uploaded through the Keystatic editor are saved to `src/assets/images/posts/` automatically.
 
 ### Videos
 
 In `.mdx` posts, embed YouTube or Vimeo videos with the `Video` component:
 
 ```mdx
-import Video from '@/components/Video.astro';
+import Video from "@/components/Video.astro";
 
 <Video id="dQw4w9WgXcQ" title="Video title" />
 <Video id="123456789" platform="vimeo" title="Vimeo video title" />
@@ -134,12 +123,12 @@ Pushing to `main` triggers an automatic build and deploy to Cloudflare Pages via
 1. Connect the repo to Cloudflare Pages in the dashboard
 2. Set build command: `pnpm build`
 3. Set output directory: `dist/`
-4. Set Node.js version to 20 in environment variables: `NODE_VERSION=20`
+4. Set Node.js version in environment variables: `NODE_VERSION=22` (Astro 6 requires Node 22.12+)
 
 ### Environment variables
 
 Set these in the Cloudflare Pages dashboard under **Settings → Environment variables**:
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `PUBLIC_GOOGLE_SITE_VERIFICATION` | No | Google Search Console verification |
+| Variable                          | Required | Description                        |
+| --------------------------------- | -------- | ---------------------------------- |
+| `PUBLIC_GOOGLE_SITE_VERIFICATION` | No       | Google Search Console verification |

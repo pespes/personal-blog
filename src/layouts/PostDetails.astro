@@ -11,7 +11,6 @@ import BackButton from "@/components/BackButton.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
-import { transition } from "@/utils/transitions";
 import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
 import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
 import { SITE } from "@/config";
@@ -91,9 +90,7 @@ const nextPost =
     class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
     data-pagefind-body
   >
-    <h1
-      class="inline-block text-2xl font-bold text-accent sm:text-3xl"
-    >
+    <h1 class="inline-block text-2xl font-bold text-accent sm:text-3xl">
       {title}
     </h1>
     <div class="my-2 flex items-center gap-2">
