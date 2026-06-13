@@ -91,7 +91,7 @@ import Video from '@/components/Video.astro';
 ## Gotchas
 
 - **Pagefind search only works after a full build** — it's not available in `pnpm dev`. The build step runs pagefind and copies the index to `public/pagefind/`.
-- **OG image generation uses Satori → `@resvg/resvg-js`** (native bindings). `@resvg/resvg-js` and `sharp` are listed under `pnpm.onlyBuiltDependencies` so their install scripts run; don't remove them.
+- **OG image generation uses Satori → `@resvg/resvg-js`** (native bindings). `sharp`, `esbuild`, and `workerd` are allowed to run install scripts via `allowBuilds` in `pnpm-workspace.yaml`; don't remove them.
 - **`src/config.ts` still has AstroPaper defaults** — `website`, `profile`, `desc`, `editPost.url`, and `timezone` all need updating before going live (`author`/`title` are already personalized).
 - **Dynamic OG images are a feature flag (`dynamicOgImage`)** — currently **disabled** in `config.ts`. When enabled, posts without an explicit `ogImage` get an OG image auto-generated at build time via Satori (adds ~1s per post).
 - **Nested blog directories** — subdirectories prefixed with `_` (e.g., `_releases/`) are excluded from URL slugs. Other nested dirs are included.
@@ -99,7 +99,7 @@ import Video from '@/components/Video.astro';
 
 ### Astro 6 migration notes
 
-- **`zod` is pinned to `4.3.6`** via `pnpm.overrides`. Astro `6.4.2` relies internally on the Zod v3-style `z.function().optional()` API; Zod `4.4.x` removed it, which crashes the build (`z.function(...).optional is not a function`) during static route generation. Do **not** bump zod past `4.3.6` until Astro ships a fix.
+- **`zod` is pinned to `4.3.6`** via `overrides` in `pnpm-workspace.yaml`. Astro `6.4.2` relies internally on the Zod v3-style `z.function().optional()` API; Zod `4.4.x` removed it, which crashes the build (`z.function(...).optional is not a function`) during static route generation. Do **not** bump zod past `4.3.6` until Astro ships a fix.
 - **Markdown plugins use the `markdown.processor` API** — `astro.config.ts` configures remark plugins via `processor: unified({ remarkPlugins: [...] })` (imported from `@astrojs/markdown-remark`, a direct dependency kept in sync with Astro's internal version). The old top-level `markdown.remarkPlugins` was deprecated in Astro 6.4.
 - **`fonts` is a top-level config option** (was `experimental.fonts` in v5). `experimental.preserveScriptOrder` was removed (now the default).
 - **`z` is imported from `astro/zod`** in `content.config.ts`, not from `astro:content` (deprecated in v6).

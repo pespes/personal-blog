@@ -13,11 +13,12 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  /* Tailwind stone ramp — warm charcoal */
+  --background: #1c1917; /* stone-900 */
+  --foreground: #ffffff;
+  --accent: #5db1e8; /* light-mode blue (#006cac), lifted for stone-900 */
+  --muted: #292524; /* stone-800 */
+  --border: #57534e; /* stone-600 */
 }
 
 @theme inline {
