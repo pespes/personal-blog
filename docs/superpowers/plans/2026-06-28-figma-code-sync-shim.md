@@ -997,11 +997,11 @@ Expected: FAIL — cannot resolve `./run`.
 import { componentFigmaProjection, snapshotToComponents, unmappedComponents } from "./components";
 import { parseCssBlock, spliceTokensIntoCss, tokensToCssBlock } from "./css";
 import { classifyAll, type EntityDiff } from "./diff";
+import { hashEntity as hashOf } from "./hash";
 import { artifactPaths, findTokenRefs, readJson, readText, writeJson, writeText } from "./io";
 import { renderDesignMd } from "./render";
-import { snapshotToComponents as _unused } from "./components"; // (kept import list explicit)
-import { serializeTokens, snapshotToTokens, tokenValueProjection } from "./tokens";
-import type { ComponentsFile, FigmaSnapshot, SyncState, TokensFile } from "./types";
+import { snapshotToTokens, tokenValueProjection } from "./tokens";
+import type { ComponentsFile, FigmaSnapshot, SyncState } from "./types";
 
 export interface RunOptions {
   root: string;
@@ -1104,9 +1104,6 @@ export function runSync(opts: RunOptions): SyncResult {
   return { report, wrote: true, drift };
 }
 
-// Local hash to avoid an extra import cycle in the ledger step.
-import { hashEntity as hashOf } from "./hash";
-
 // ---- CLI entry ----
 function parseFlags(argv: string[]) {
   return {
@@ -1136,8 +1133,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 }
 ```
-
-> Note: the `import { hashEntity as hashOf } from "./hash";` line is intentionally placed after `runSync` for readability; ESM hoists imports, so it is in scope inside the function. Remove the `_unused` import line if your linter flags it — it is only there to make the import list explicit and may be deleted.
 
 - [ ] **Step 5: Run to verify it passes**
 
