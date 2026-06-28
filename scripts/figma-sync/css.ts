@@ -6,7 +6,15 @@ export const TOKENS_END = "/* figma-tokens:end */";
 export function tokensToCssBlock(t: TokensFile): string {
   const names = Object.keys(t).sort();
   const lightDecls = names.map((n) => `  --${n}: ${t[n].$value};`).join("\n");
-  const darkDecls = names.map((n) => `  --${n}: ${t[n].$extensions.mode.dark};`).join("\n");
+  const darkDecls = names
+    .map((n) => {
+      const dark = t[n].$extensions.mode.dark;
+      if (dark === null || dark === undefined || dark === "") {
+        throw new Error(`Token "${n}" is missing its dark-mode value`);
+      }
+      return `  --${n}: ${dark};`;
+    })
+    .join("\n");
   return [
     TOKENS_START,
     `:root,\nhtml[data-theme="light"] {\n${lightDecls}\n}`,
@@ -18,10 +26,15 @@ export function tokensToCssBlock(t: TokensFile): string {
 export function spliceTokensIntoCss(css: string, block: string): string {
   const start = css.indexOf(TOKENS_START);
   const end = css.indexOf(TOKENS_END);
+  if (start === -1 && end === -1) {
+    return block + "\n\n" + css;
+  }
   if (start !== -1 && end !== -1 && end > start) {
     return css.slice(0, start) + block + css.slice(end + TOKENS_END.length);
   }
-  return block + "\n\n" + css;
+  throw new Error(
+    "Malformed figma-tokens markers in CSS: expected both start and end markers in order, or neither."
+  );
 }
 
 export function parseCssBlock(css: string): Record<string, { light: string; dark: string }> {
