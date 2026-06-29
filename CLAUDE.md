@@ -105,6 +105,17 @@ import Video from '@/components/Video.astro';
 - **`z` is imported from `astro/zod`** in `content.config.ts`, not from `astro:content` (deprecated in v6).
 - **Clean `node_modules` after major upgrades** — stale, non-pnpm package directories left in `node_modules` (e.g. an old hoisted `zod`) can shadow the correct versions. If resolution looks wrong, `rm -rf node_modules && pnpm install`.
 
+## Design tokens ⇄ Figma
+
+Design tokens and a component manifest are synced from Figma (source of truth) via `/figma-sync`.
+
+- Canonical data: `design/tokens.json` (DTCG), `design/components.json`, `design/sync-state.json`.
+- Read `design/DESIGN.md` for a current overview without querying Figma.
+- Token CSS is generated into the `/* figma-tokens:start … end */` region of
+  `src/styles/global.css` — **do not hand-edit inside those markers**; edit in Figma and run
+  `pnpm figma:sync`. Hand edits there are reported as `code-drift`.
+- `pnpm figma:sync --check` reports drift without writing (exit 1 if drift) — useful pre-commit.
+
 ## Environment Variables
 
 ```bash

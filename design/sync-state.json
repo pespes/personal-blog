@@ -1,0 +1,32 @@
+{
+  "tokens.accent": {
+    "figmaHash": "b675b0f9ad27e486",
+    "codeHash": "b675b0f9ad27e486",
+    "lastSync": "2026-06-29T12:30:28.113Z@e41f320",
+    "status": "in-sync"
+  },
+  "tokens.background": {
+    "figmaHash": "0dcaca77a6c139ab",
+    "codeHash": "0dcaca77a6c139ab",
+    "lastSync": "2026-06-29T12:30:28.113Z@e41f320",
+    "status": "in-sync"
+  },
+  "tokens.border": {
+    "figmaHash": "5fc2931a5a0abc6c",
+    "codeHash": "5fc2931a5a0abc6c",
+    "lastSync": "2026-06-29T12:30:28.113Z@e41f320",
+    "status": "in-sync"
+  },
+  "tokens.foreground": {
+    "figmaHash": "25f891a033f939ee",
+    "codeHash": "25f891a033f939ee",
+    "lastSync": "2026-06-29T12:30:28.113Z@e41f320",
+    "status": "in-sync"
+  },
+  "tokens.muted": {
+    "figmaHash": "01b367e485fe6cd5",
+    "codeHash": "01b367e485fe6cd5",
+    "lastSync": "2026-06-29T12:30:28.113Z@e41f320",
+    "status": "in-sync"
+  }
+}
