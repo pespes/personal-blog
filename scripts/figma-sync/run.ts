@@ -2,7 +2,7 @@ import { componentFigmaProjection, snapshotToComponents, unmappedComponents } fr
 import { parseCssBlock, spliceTokensIntoCss, tokensToCssBlock } from "./css";
 import { classifyAll, type EntityDiff } from "./diff";
 import { hashEntity as hashOf } from "./hash";
-import { artifactPaths, findTokenRefs, readJson, readText, writeJson, writeText } from "./io";
+import { artifactPaths, fileExists, findTokenRefs, readJson, readText, writeJson, writeText } from "./io";
 import { renderDesignMd } from "./render";
 import { snapshotToTokens, tokenValueProjection } from "./tokens";
 import type { ComponentsFile, FigmaSnapshot, SyncState } from "./types";
@@ -48,7 +48,7 @@ export function runSync(opts: RunOptions): SyncResult {
   for (const name of Object.keys(candidateComponents)) {
     compCandidates[`components.${name}`] = componentFigmaProjection(candidateComponents[name]);
     const src = candidateComponents[name].source;
-    compCodeStates[`components.${name}`] = { source: src, exists: src ? readText(`${opts.root}/${src}`, "") !== "" : null };
+    compCodeStates[`components.${name}`] = { source: src, exists: src ? fileExists(`${opts.root}/${src}`) : null };
   }
 
   const candidates = opts.flags.tokensOnly ? tokenCandidates : { ...tokenCandidates, ...compCandidates };
@@ -125,15 +125,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   } catch {
     /* not a git repo / no commits yet */
   }
+  const flags = parseFlags(process.argv.slice(2));
   const result = runSync({
     root: process.cwd(),
-    flags: parseFlags(process.argv.slice(2)),
+    flags,
     now: new Date().toISOString(),
     commit,
   });
   // eslint-disable-next-line no-console
   console.log(result.report);
-  if (parseFlags(process.argv.slice(2)).check && result.drift.some((d) => d.status !== "in-sync")) {
+  if (flags.check && result.drift.some((d) => d.status !== "in-sync")) {
     process.exitCode = 1;
   }
 }
