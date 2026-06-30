@@ -57,7 +57,8 @@ export type EntityStatus =
   | "code-drift"
   | "conflict"
   | "new"
-  | "removed";
+  | "removed"
+  | "extraneous";
 
 export interface SyncEntry {
   figmaHash: string;

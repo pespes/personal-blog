@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
-import { classifyEntity } from "./diff";
+import { classifyAll, classifyEntity } from "./diff";
 import { hashEntity } from "./hash";
-import type { SyncEntry } from "./types";
+import type { SyncEntry, SyncState } from "./types";
 
 const figma = { light: "#006cac", dark: "#5db1e8" };
 const code = { light: "#006cac", dark: "#5db1e8" };
@@ -22,6 +22,22 @@ test("both changed -> conflict", () => {
 test("no prev -> new", () => {
   expect(classifyEntity("accent", figma, code, undefined).status).toBe("new");
 });
-test("missing candidate -> removed", () => {
+test("missing candidate with prior ledger -> removed", () => {
   expect(classifyEntity("accent", undefined, code, prev).status).toBe("removed");
+});
+test("code-only (no candidate, no prev, has codeState) -> extraneous", () => {
+  expect(classifyEntity("custom", undefined, code, undefined).status).toBe("extraneous");
+});
+test("classifyAll unions candidate, codeState, and prev keys, sorted", () => {
+  const candidates = { "tokens.accent": figma };
+  const codeStates = { "tokens.accent": code, "tokens.custom": code };
+  const prevState: SyncState = {
+    "tokens.old": { figmaHash: "x", codeHash: "y", lastSync: "t", status: "in-sync" },
+  };
+  const out = classifyAll(candidates, codeStates, prevState);
+  expect(out.map((d) => d.key)).toEqual(["tokens.accent", "tokens.custom", "tokens.old"]);
+  const byKey = Object.fromEntries(out.map((d) => [d.key, d.status]));
+  expect(byKey["tokens.accent"]).toBe("new"); // candidate present, no prior ledger
+  expect(byKey["tokens.custom"]).toBe("extraneous"); // code-only, never from Figma
+  expect(byKey["tokens.old"]).toBe("removed"); // in ledger, gone from Figma
 });

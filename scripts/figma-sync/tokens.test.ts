@@ -30,3 +30,18 @@ test("tokenValueProjection extracts both modes", () => {
   const t = snapshotToTokens(snap);
   expect(tokenValueProjection(t.accent)).toEqual({ light: "#006cac", dark: "#5db1e8" });
 });
+
+test("parseTokens rejects non-object JSON", () => {
+  expect(() => parseTokens("[]")).toThrow(/expected a JSON object/);
+  expect(() => parseTokens("42")).toThrow(/expected a JSON object/);
+});
+
+test("parseTokens rejects a token missing $value", () => {
+  const bad = JSON.stringify({ accent: { $type: "color", $extensions: { mode: { dark: "#000" } } } });
+  expect(() => parseTokens(bad)).toThrow(/Invalid token "accent"/);
+});
+
+test("parseTokens rejects a token missing mode.dark", () => {
+  const bad = JSON.stringify({ accent: { $type: "color", $value: "#006cac", $extensions: { css: "var(--accent)" } } });
+  expect(() => parseTokens(bad)).toThrow(/missing \$extensions\.mode\.dark/);
+});

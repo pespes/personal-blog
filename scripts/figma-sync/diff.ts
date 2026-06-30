@@ -19,7 +19,9 @@ export function classifyEntity(
 
   let status: EntityStatus;
   if (candidate === undefined) {
-    status = "removed";
+    // Absent from Figma. "removed" if it was previously synced (has ledger history);
+    // "extraneous" if it only exists in code and was never a Figma token.
+    status = prev ? "removed" : "extraneous";
   } else if (!prev) {
     status = "new";
   } else {
@@ -38,7 +40,7 @@ export function classifyAll(
   codeStates: Record<string, unknown>,
   prev: SyncState,
 ): EntityDiff[] {
-  const keys = new Set([...Object.keys(candidates), ...Object.keys(prev)]);
+  const keys = new Set([...Object.keys(candidates), ...Object.keys(codeStates), ...Object.keys(prev)]);
   return [...keys]
     .sort()
     .map((key) => classifyEntity(key, candidates[key], codeStates[key], prev[key]));
