@@ -7,7 +7,7 @@ export function artifactPaths(root: string) {
     tokens: join(root, "design", "tokens.json"),
     components: join(root, "design", "components.json"),
     syncState: join(root, "design", "sync-state.json"),
-    designMd: join(root, "design", "DESIGN.md"),
+    designMd: join(root, "design", "design-system.generated.md"),
     globalCss: join(root, "src", "styles", "global.css"),
     srcDir: join(root, "src"),
   };

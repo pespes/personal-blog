@@ -110,11 +110,17 @@ import Video from '@/components/Video.astro';
 Design tokens and a component manifest are synced from Figma (source of truth) via `/figma-sync`.
 
 - Canonical data: `design/tokens.json` (DTCG), `design/components.json`, `design/sync-state.json`.
-- Read `design/DESIGN.md` for a current overview without querying Figma.
+- Read `design/design-system.generated.md` for a current overview without querying Figma.
 - Token CSS is generated into the `/* figma-tokens:start … end */` region of
   `src/styles/global.css` — **do not hand-edit inside those markers**; edit in Figma and run
   `pnpm figma:sync`. Hand edits there are reported as `code-drift`.
 - `pnpm figma:sync --check` reports drift without writing (exit 1 if drift) — useful pre-commit.
+
+## Design decisions — `design.md`
+
+`design.md` (repo root) is the hand-authored **design-decision reference**: the architecture rules, conventions, and guardrails for touching design/UI code. **Read it before generating or changing UI.** (It is distinct from `design/design-system.generated.md`, which is the auto-generated token/component overview — do not conflate them.)
+
+**Keep `design.md` current:** whenever you make or change a **design-architecture decision** — token architecture, typeface roles, naming/layering conventions, a new guardrail, component structure, or resolving one of its open decisions — update `design.md` in the **same change**: edit the relevant section and append a dated entry to its Change log. Routine token *value* changes go through `pnpm figma:sync`, not `design.md`.
 
 ## Environment Variables
 

@@ -101,7 +101,7 @@ export function runSync(opts: RunOptions): SyncResult {
   }
   writeJson(p.syncState, newState);
 
-  // Regenerate DESIGN.md from canonical.
+  // Regenerate design/design-system.generated.md from canonical.
   const finalComponents = opts.flags.tokensOnly ? existingComponents : candidateComponents;
   writeText(p.designMd, renderDesignMd({ tokens: candidateTokens, components: finalComponents, diffs: drift, lastSync }));
 

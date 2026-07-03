@@ -42,5 +42,5 @@ drift is reported, never auto-rewritten.
 ## Notes
 
 - The engine never edits code outside the `/* figma-tokens:start … end */` region.
-- Between syncs, read `design/DESIGN.md` + `design/tokens.json` for design-system context instead
+- Between syncs, read `design/design-system.generated.md` + `design/tokens.json` for design-system context instead
   of querying Figma.

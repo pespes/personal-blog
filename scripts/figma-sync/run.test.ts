@@ -30,7 +30,7 @@ test("first run writes all artifacts and the CSS region", () => {
   expect(existsSync(join(root, "design", "tokens.json"))).toBe(true);
   expect(existsSync(join(root, "design", "components.json"))).toBe(true);
   expect(existsSync(join(root, "design", "sync-state.json"))).toBe(true);
-  expect(readFileSync(join(root, "design", "DESIGN.md"), "utf8")).toContain("--accent");
+  expect(readFileSync(join(root, "design", "design-system.generated.md"), "utf8")).toContain("--accent");
   expect(readFileSync(join(root, "src", "styles", "global.css"), "utf8")).toContain("--accent: #006cac;");
 });
 
