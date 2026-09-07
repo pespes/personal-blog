@@ -6,7 +6,11 @@ import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
+import Menu from "./Menu.astro";
 import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
+
+const mailHref = SOCIALS.find(s => s.name === "Mail")?.href ?? "#";
 
 const { pathname } = Astro.url;
 
@@ -50,11 +54,26 @@ const isActive = (path: string) => {
     </a>
     <nav
       id="nav-menu"
-      class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
+      class="flex w-full items-center justify-end gap-x-2 sm:ms-2 sm:gap-x-3"
     >
+      {/* Desktop: pill menu (from the Figma "Menu" component) */}
+      <div class="hidden sm:block">
+        <Menu
+          aria-label="Primary"
+          items={[
+            { label: "Home", href: "/", active: currentPath === "/" },
+            { label: "Posts", href: "/posts", active: isActive("/posts") },
+            { label: "Tags", href: "/tags", active: isActive("/tags") },
+            { label: "About", href: "/about", active: isActive("/about") },
+          ]}
+          cta={{ label: "Email me", href: mailHref }}
+        />
+      </div>
+
+      {/* Mobile: hamburger toggle */}
       <button
         id="menu-btn"
-        class="focus-outline self-end p-2 sm:hidden"
+        class="focus-outline p-2 sm:hidden"
         aria-label="Open Menu"
         aria-expanded="false"
         aria-controls="menu-items"
@@ -62,81 +81,86 @@ const isActive = (path: string) => {
         <IconX id="close-icon" class="hidden" />
         <IconMenuDeep id="menu-icon" />
       </button>
+
+      {/* Mobile: collapsible link list (toggled by #menu-btn) */}
       <ul
         id="menu-items"
         class:list={[
-          "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-          "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
-          "hidden",
-          "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
+          "absolute end-0 top-full z-20 mt-2 hidden w-48 flex-col gap-1",
+          "rounded-md border border-border bg-background p-2 shadow-lg",
+          "[&>li>a]:block [&>li>a]:rounded [&>li>a]:px-3 [&>li>a]:py-2 [&>li>a]:font-medium [&>li>a]:hover:text-accent",
+          "sm:hidden",
         ]}
       >
-        <li class="col-span-2">
+        <li>
+          <a href="/" class:list={{ "active-nav": currentPath === "/" }}>Home</a
+          >
+        </li>
+        <li>
           <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
             Posts
           </a>
         </li>
-        <li class="col-span-2">
-          <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-            Tags
-          </a>
+        <li>
+          <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}
+            >Tags</a
+          >
         </li>
-        <li class="col-span-2">
+        <li>
           <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
             About
           </a>
         </li>
+        <li>
+          <a href={mailHref}>Email me</a>
+        </li>
+      </ul>
+
+      {/* Always-visible controls */}
+      <div class="flex items-center gap-x-1 sm:gap-x-2">
         {
           SITE.showArchives && (
-            <li class="col-span-2">
-              <LinkButton
-                href="/archives"
-                class:list={[
-                  "focus-outline flex justify-center p-3 sm:p-1",
-                  {
-                    "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                  },
-                ]}
-                title="Archives"
-                aria-label="archives"
-              >
-                <IconArchive class="hidden sm:inline-block" />
-                <span class="sm:sr-only">Archives</span>
-              </LinkButton>
-            </li>
+            <LinkButton
+              href="/archives"
+              class:list={[
+                "focus-outline flex justify-center p-2 sm:p-1",
+                { "active-nav [&>svg]:stroke-accent": isActive("/archives") },
+              ]}
+              title="Archives"
+              aria-label="archives"
+            >
+              <IconArchive />
+              <span class="sr-only">Archives</span>
+            </LinkButton>
           )
         }
-        <li class="col-span-1 flex items-center justify-center">
-          <LinkButton
-            href="/search"
-            class:list={[
-              "focus-outline flex p-3 sm:p-1",
-              { "[&>svg]:stroke-accent": isActive("/search") },
-            ]}
-            title="Search"
-            aria-label="search"
-          >
-            <IconSearch />
-            <span class="sr-only">Search</span>
-          </LinkButton>
-        </li>
+        <LinkButton
+          href="/search"
+          class:list={[
+            "focus-outline flex p-2 sm:p-1",
+            { "[&>svg]:stroke-accent": isActive("/search") },
+          ]}
+          title="Search"
+          aria-label="search"
+        >
+          <IconSearch />
+          <span class="sr-only">Search</span>
+        </LinkButton>
         {
           SITE.lightAndDarkMode && (
-            <li class="col-span-1 flex items-center justify-center">
-              <button
-                id="theme-btn"
-                class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                title="Toggles light & dark"
-                aria-label="auto"
-                aria-live="polite"
-              >
-                <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-              </button>
-            </li>
+            <button
+              id="theme-btn"
+              class="focus-outline relative size-10 p-3 sm:size-8 sm:p-2 hover:[&>svg]:stroke-accent"
+              title="Toggles light & dark"
+              aria-label="auto"
+              aria-live="polite"
+            >
+              <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            </button>
           )
         }
-      </ul>
+      </div>
     </nav>
   </div>
 </header>
