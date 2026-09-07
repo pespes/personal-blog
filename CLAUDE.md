@@ -1,8 +1,8 @@
 # Personal Blog
 
-Astro v6 blog built on the [AstroPaper](https://github.com/satnaing/astro-paper) template. Deployed to Cloudflare Pages.
+Astro v7 blog built on the [AstroPaper](https://github.com/satnaing/astro-paper) template. Deployed to Cloudflare Pages.
 
-**Requires Node `22.12.0`+** (Astro 6 dropped Node 18/20 support).
+**Requires Node `22.12.0`+** (enforced via `engines` + `.nvmrc`; Astro 6 dropped Node 18/20 and Astro 7 keeps the same floor).
 
 ## Commands
 
@@ -97,12 +97,14 @@ import Video from '@/components/Video.astro';
 - **Nested blog directories** — subdirectories prefixed with `_` (e.g., `_releases/`) are excluded from URL slugs. Other nested dirs are included.
 - **Scheduled posts** — posts with `pubDatetime` up to 15 minutes in the future will still be published (controlled by `scheduledPostMargin` in `config.ts`).
 
-### Astro 6 migration notes
+### Astro 7 migration notes
 
-- **`zod` is pinned to `4.3.6`** via `overrides` in `pnpm-workspace.yaml`. Astro `6.4.2` relies internally on the Zod v3-style `z.function().optional()` API; Zod `4.4.x` removed it, which crashes the build (`z.function(...).optional is not a function`) during static route generation. Do **not** bump zod past `4.3.6` until Astro ships a fix.
-- **Markdown plugins use the `markdown.processor` API** — `astro.config.ts` configures remark plugins via `processor: unified({ remarkPlugins: [...] })` (imported from `@astrojs/markdown-remark`, a direct dependency kept in sync with Astro's internal version). The old top-level `markdown.remarkPlugins` was deprecated in Astro 6.4.
+- **`zod` is pinned to `^4.5.4`** via `overrides` in `pnpm-workspace.yaml`. Astro `7.3` depends on `zod ^4.5.4` internally; `@astrojs/rss` and `@astrojs/sitemap` still declare `zod ^4.3.6`, so without the override pnpm resolves a second copy at `4.3.6`. The override keeps one zod on Astro's line. (Under Astro 6 this was pinned _down_ to `4.3.6` for a `z.function().optional()` incompatibility — that constraint is gone in v7.)
+- **`@keystar/ui` is pinned to `0.10.0`** via `overrides` in `pnpm-workspace.yaml`. `@keystatic/core@0.6.x` requires `@keystar/ui ~0.10.0`, but pnpm otherwise keeps resolving the `0.7.21` that `@keystatic/core@0.5.x` used (leaving an unmet-peer warning). Bump this to match whatever `@keystatic/core` requires when Keystatic is upgraded.
+- **Markdown plugins use the `markdown.processor` API** — Astro 7 renders `.md`/`.mdx` through its native pipeline; remark plugins require `@astrojs/markdown-remark` (a direct dependency, kept in sync with Astro's internal version — `7.3.0` for Astro `7.3.x`) via `processor: unified({ remarkPlugins: [...] })` in `astro.config.ts`. `@astrojs/mdx@8` also peer-depends on `@astrojs/markdown-remark ^7.3.0`.
+- **`@shikijs/transformers` is pinned to the exact version Astro bundles** (`4.1.0` for Astro `6.4.x` and `7.3.x`). A newer minor pulls a second copy of `@shikijs/types`, and `astro check` then fails with `CodeToHastOptions ... is not assignable` on the transformer calls in `shikiConfig`. When bumping Astro, re-pin this to match `pnpm why shiki`.
 - **`fonts` is a top-level config option** (was `experimental.fonts` in v5). `experimental.preserveScriptOrder` was removed (now the default).
-- **`z` is imported from `astro/zod`** in `content.config.ts`, not from `astro:content` (deprecated in v6).
+- **`z` is imported from `astro/zod`** in `content.config.ts`, not from `astro:content` (deprecated since v6).
 - **Clean `node_modules` after major upgrades** — stale, non-pnpm package directories left in `node_modules` (e.g. an old hoisted `zod`) can shadow the correct versions. If resolution looks wrong, `rm -rf node_modules && pnpm install`.
 
 ## Design tokens ⇄ Figma
