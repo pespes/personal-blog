@@ -1,5 +1,8 @@
 overrides:
   zod: 4.3.6
+  # @keystatic/core 0.6.9 needs @keystar/ui ~0.10.0, but pnpm keeps
+  # resolving the 0.7.21 that 0.5.x used. Pin it explicitly.
+  "@keystar/ui": 0.10.0
 
 allowBuilds:
   esbuild: true

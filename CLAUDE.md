@@ -100,6 +100,7 @@ import Video from '@/components/Video.astro';
 ### Astro 6 migration notes
 
 - **`zod` is pinned to `4.3.6`** via `overrides` in `pnpm-workspace.yaml`. Astro `6.4.2` relies internally on the Zod v3-style `z.function().optional()` API; Zod `4.4.x` removed it, which crashes the build (`z.function(...).optional is not a function`) during static route generation. Do **not** bump zod past `4.3.6` until Astro ships a fix.
+- **`@keystar/ui` is pinned to `0.10.0`** via `overrides` in `pnpm-workspace.yaml`. `@keystatic/core@0.6.x` requires `@keystar/ui ~0.10.0`, but pnpm otherwise keeps resolving the `0.7.21` that `@keystatic/core@0.5.x` used (leaving an unmet-peer warning). Bump this to match whatever `@keystatic/core` requires when Keystatic is upgraded.
 - **Markdown plugins use the `markdown.processor` API** — `astro.config.ts` configures remark plugins via `processor: unified({ remarkPlugins: [...] })` (imported from `@astrojs/markdown-remark`, a direct dependency kept in sync with Astro's internal version). The old top-level `markdown.remarkPlugins` was deprecated in Astro 6.4.
 - **`@shikijs/transformers` is pinned to the exact version Astro bundles** (`4.1.0` for Astro `6.4.x`). A newer minor pulls a second copy of `@shikijs/types`, and `astro check` then fails with `CodeToHastOptions ... is not assignable` on the transformer calls in `shikiConfig`. When bumping Astro, re-pin this to match `pnpm why shiki`.
 - **`fonts` is a top-level config option** (was `experimental.fonts` in v5). `experimental.preserveScriptOrder` was removed (now the default).
