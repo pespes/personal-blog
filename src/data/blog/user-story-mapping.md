@@ -1,5 +1,5 @@
 ---
-title: 'User Story Mapping: Closing the Gap Between Design Research & Delivery'
+title: "User Story Mapping: Closing the Gap Between Design Research & Delivery"
 author: Peter Esveld
 pubDatetime: 2026-03-22T00:00:00.000Z
 featured: false
@@ -15,6 +15,7 @@ description: >-
   work into weeks.
 hideEditPost: false
 ---
+
 Late this summer, a tiny team of three designers here at Fjord began an amazing project. Our client was a major freight company that ships across the US and Canada. The company has been around for over a hundred years, and they know the business inside and out. However, their technology hasn't kept pace with the market. They're now in the midst of a technological revolution.
 
 The men and women at this company work hard. The work is outdoors, in extreme weather and dangerous industrial conditions. They plan, track and report their work on printed paper marked up with Sharpie. The process works, but it's prone to errors. Each time a worker forgot to record what they did during the day, the company left more money on the table.
@@ -43,10 +44,10 @@ User story mapping could tie our detailed knowledge from research into a familia
 
 A user story map is:
 
-* A living, collaborative document (the size of an office wall)
-* A mapping of a user's experience
-* Across an entire software initiative
-* Used to define and prioritize an app or service's features and functionality
+- A living, collaborative document (the size of an office wall)
+- A mapping of a user's experience
+- Across an entire software initiative
+- Used to define and prioritize an app or service's features and functionality
 
 ## Getting Your Stories Straight
 
@@ -73,7 +74,7 @@ A complete user story map has a few key elements:
 
 ## How We Mapped Our Stories
 
-We only had a single day with our client. There simply wasn't enough time to create a user story map from scratch. So we gathered all the user stories in one place and drafted a map beforehand. We made informed guesses based on our research and expertise — then put it up on the wall before the workshop. When our clients came in for the day, we invited them to tear it apart and rebuild it the way it *should* be.
+We only had a single day with our client. There simply wasn't enough time to create a user story map from scratch. So we gathered all the user stories in one place and drafted a map beforehand. We made informed guesses based on our research and expertise — then put it up on the wall before the workshop. When our clients came in for the day, we invited them to tear it apart and rebuild it the way it _should_ be.
 
 Story mapping required us to give up some of our privileged space as expert design consultants. Rather than presenting answers, we needed to take on the role of facilitators and listeners — leveraging our clients' subject matter expertise and closeness to the problem to create the best map possible.
 
@@ -91,6 +92,6 @@ At the end, we had designed much more than just an MVP. And when we went to test
 
 Starting with a story map was new for us, but it had some big benefits. It was an approach that allowed us to stay human-centered while being more inclusive in talking about our initial approach to designing software.
 
-We could better facilitate a discussion about business requirements, technical requirements, and user needs. The user stories provided a metric for success to refer back to throughout the project — we could always ask: *is this design addressing the story?*
+We could better facilitate a discussion about business requirements, technical requirements, and user needs. The user stories provided a metric for success to refer back to throughout the project — we could always ask: _is this design addressing the story?_
 
 This is a powerful tool, and one we look forward to continuing to refine and adapt to our practice.

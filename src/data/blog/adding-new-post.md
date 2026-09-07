@@ -135,6 +135,7 @@ For instance, if you want to place your table of contents just under the intro p
 Here are some recommendations, tips & ticks for creating new posts in AstroPaper blog theme.
 
 <!-- [!code ++] -->
+
 ## Table of contents
 
 <!-- the rest of the post -->
