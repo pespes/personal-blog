@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); case \"$f\" in */src/components/*|*/src/styles/global.css|*/src/styles/typography.css|*/src/constants.ts|*/astro.config.ts|*/design/tokens.json) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"A design-surface file was just edited. Per CLAUDE.md, if this changed a design-architecture decision (tokens, typeface roles, naming/layering conventions, guardrails, or component structure), update design.md: the relevant section plus a dated Change log entry. If it was only a value/bugfix change, no design.md update is needed.\"}}';; esac",
+            "command": "f=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); case \"$f\" in */src/components/*|*/src/styles/global.css|*/src/styles/typography.css|*/src/constants.ts|*/astro.config.ts) echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"A design-surface file was just edited. Per CLAUDE.md, if this changed a design-architecture decision (color tokens, typeface roles, theming mechanism, naming conventions, guardrails, or component structure), update docs/design.md: the relevant section plus a dated Change log entry. If it was only a value/bugfix change, no docs/design.md update is needed.\"}}';; esac",
             "statusMessage": "Checking design surface"
           }
         ]

@@ -19,8 +19,9 @@ pnpm sync         # Sync Astro content types
 ## Architecture
 
 ```text
+docs/             # Project documentation (design.md = design & theming reference)
 src/
-  components/     # 14 Astro components (Header, Card, Tag, Datetime, Video, etc.)
+  components/     # 15 Astro components (Header, Card, Tag, Datetime, Video, etc.)
   layouts/        # Layout, PostDetails, Main, AboutLayout
   pages/          # Routes — static and dynamic
     api/          # (Keystatic API is injected automatically by @keystatic/astro — no manual file needed)
@@ -107,22 +108,33 @@ import Video from '@/components/Video.astro';
 - **`z` is imported from `astro/zod`** in `content.config.ts`, not from `astro:content` (deprecated since v6).
 - **Clean `node_modules` after major upgrades** — stale, non-pnpm package directories left in `node_modules` (e.g. an old hoisted `zod`) can shadow the correct versions. If resolution looks wrong, `rm -rf node_modules && pnpm install`.
 
-## Design tokens ⇄ Figma
+## Design & theming — `docs/design.md`
 
-Design tokens and a component manifest are synced from Figma (source of truth) via `/figma-sync`.
+[`docs/design.md`](docs/design.md) is the single design reference: color tokens and their light/dark values, how theme switching works, typography, icons, component inventory, guardrails, and open decisions. **Read it before generating or changing UI.**
 
-- Canonical data: `design/tokens.json` (DTCG), `design/components.json`, `design/sync-state.json`.
-- Read `design/design-system.generated.md` for a current overview without querying Figma.
-- Token CSS is generated into the `/* figma-tokens:start … end */` region of
-  `src/styles/global.css` — **do not hand-edit inside those markers**; edit in Figma and run
-  `pnpm figma:sync`. Hand edits there are reported as `code-drift`.
-- `pnpm figma:sync --check` reports drift without writing (exit 1 if drift) — useful pre-commit.
+- The code is the source of truth. Color tokens are hand-authored CSS custom properties in `src/styles/global.css` (mapped to Tailwind via `@theme inline`); there is no Figma/token sync.
+- **Keep `docs/design.md` current:** whenever you make or change a **design-architecture decision** — color tokens, typeface roles, the theming mechanism, naming conventions, a guardrail, component structure, or resolving one of its open decisions — update `docs/design.md` in the **same change**: edit the relevant section and append a dated entry to its Change log.
 
-## Design decisions — `design.md`
+## Figma — use Figma Console MCP
 
-`design.md` (repo root) is the hand-authored **design-decision reference**: the architecture rules, conventions, and guardrails for touching design/UI code. **Read it before generating or changing UI.** (It is distinct from `design/design-system.generated.md`, which is the auto-generated token/component overview — do not conflate them.)
+For any Figma work in this project (reading designs, screenshots, variables, components, or editing the canvas), the Figma MCP servers are ranked:
 
-**Keep `design.md` current:** whenever you make or change a **design-architecture decision** — token architecture, typeface roles, naming/layering conventions, a new guardrail, component structure, or resolving one of its open decisions — update `design.md` in the **same change**: edit the relevant section and append a dated entry to its Change log. Routine token *value* changes go through `pnpm figma:sync`, not `design.md`.
+1. **`figma-console`** — the default ([figma-console-mcp](https://github.com/southleft/figma-console-mcp), tools named `mcp__figma-console__figma_*`), plus the skills built on it (e.g. `figma-deep-component`, `figma-export-tokens`, `figma-lint-design`).
+2. **`figma`** — official remote server (`mcp__figma__*`, with the `figma:*` plugin skills).
+3. **`figma-devmode`** — local Dev Mode server (`mcp__figma-devmode__*`).
+
+**Always start with `figma-console`, and ask before switching.**
+
+1. **Check the bridge first:** call `figma_get_status` with `probe: true` and confirm which file is connected.
+2. **If it isn't connected, help the user fix it — don't switch.** Ask them to open Figma Desktop and run the **Desktop Bridge** plugin in the target file (Plugins → Development → Figma Desktop Bridge), then call `figma_reconnect` and probe again. Repeat until it works or the user says they can't or don't want to.
+3. **Only then offer a fallback, and ask first.** Never call `figma` or `figma-devmode` tools without the user's explicit OK. Say why `figma-console` can't do the job and which server you'd use instead. The same applies when the bridge works but the task needs something only the official server offers (e.g. Code Connect, `generate_figma_design`).
+4. **Go back to `figma-console`** after any approved fallback. Approval covers that task only, not the rest of the session.
+
+If the user names a server themselves, that counts as approval to use it.
+
+- **Setup:** `figma-console` is configured at user scope (`~/.claude.json`, which holds `FIGMA_ACCESS_TOKEN`), not in this repo. Don't add a project `.mcp.json` entry for it — it would shadow the user config and need the token in the shell.
+- **Check the file name before writing.** Several files (and other sessions) can be connected at once; confirm the active file before any edit or delete. The main file is "Personal blog" (`FdZ1cB4BCyXrA8YlOOXbm0`).
+- Figma is a sketch reference only — the code is the source of truth (see `docs/design.md`). Nothing syncs between them.
 
 ## Environment Variables
 

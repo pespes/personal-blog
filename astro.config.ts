@@ -78,12 +78,12 @@ export default defineConfig({
       styles: ["normal", "italic"],
     },
     {
-      name: "Sora",
-      cssVariable: "--font-sora",
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
       provider: fontProviders.google(),
-      fallbacks: ["sans-serif"],
-      weights: [400, 500, 600, 700, 800],
-      styles: ["normal"],
+      fallbacks: ["monospace"],
+      weights: [400, 700],
+      styles: ["normal", "italic"],
     },
   ],
 });

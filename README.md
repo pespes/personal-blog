@@ -47,6 +47,12 @@ Before going live, update these two files:
 - **[`src/config.ts`](src/config.ts)** — site URL, author name, timezone, and feature flags
 - **[`src/constants.ts`](src/constants.ts)** — social links and edit-post URL
 
+## Documentation
+
+Project docs live in [`docs/`](docs/):
+
+- **[`docs/design.md`](docs/design.md)** — design & theming reference: color tokens, light/dark mode, typography, icons, components, and guardrails
+
 ## Writing Posts
 
 Posts live in `src/data/blog/` as `.md` or `.mdx` files. You can write them directly or use the Keystatic CMS UI at `/keystatic` in dev mode.
