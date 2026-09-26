@@ -42,31 +42,27 @@ const {
   {...attrs}
 >
   <ul class="flex items-center gap-2.5">
-    {
-      items.map(item => (
-        <li>
-          <a
-            href={item.href}
-            aria-current={item.active ? "page" : undefined}
-            class:list={[
-              "block rounded-md px-2 py-2 text-base font-medium underline-offset-4 hover:underline",
-              { underline: item.active },
-            ]}
-          >
-            {item.label}
-          </a>
-        </li>
-      ))
-    }
+    {items.map(item => (
+      <li>
+        <a
+          href={item.href}
+          aria-current={item.active ? "page" : undefined}
+          class:list={[
+            "block rounded-md px-2 py-2 text-base font-medium underline-offset-4 hover:underline",
+            { underline: item.active },
+          ]}
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
   </ul>
-  {
-    cta && (
-      <a
-        href={cta.href}
-        class="rounded-full bg-accent px-5 py-2 text-base font-medium text-background transition-colors hover:bg-accent/90"
-      >
-        {cta.label}
-      </a>
-    )
-  }
+  {cta && (
+    <a
+      href={cta.href}
+      class="rounded-full bg-accent px-5 py-2 text-base font-medium text-background transition-colors hover:bg-accent/90"
+    >
+      {cta.label}
+    </a>
+  )}
 </nav>
