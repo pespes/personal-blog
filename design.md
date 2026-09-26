@@ -10,7 +10,7 @@ Last updated: 2026-09-26
 
 ## Purpose & stack
 
-A personal blog (author: Peter Esveld) built on **Astro v6** (AstroPaper template), deployed as a fully static site to **Cloudflare Pages**. Styling is **Tailwind CSS v4** (configured via `@import "tailwindcss"` and an `@theme inline` block in `src/styles/global.css`, not a `tailwind.config.js`). Long-form content is styled with the `@tailwindcss/typography` plugin (`.app-prose`). Fonts load through Astro's top-level `fonts` API. Content is authored in Markdown/MDX (`src/data/blog/`) with an optional Keystatic CMS at `/keystatic`. **Design tokens and the component library are authored in Figma and treated as the source of truth**, synced into the repo via `/figma-sync`.
+A personal blog (author: Peter Esveld) built on **Astro v7** (AstroPaper template), deployed as a fully static site to **Cloudflare Pages**. Styling is **Tailwind CSS v4** (configured via `@import "tailwindcss"` and an `@theme inline` block in `src/styles/global.css`, not a `tailwind.config.js`). Long-form content is styled with the `@tailwindcss/typography` plugin (`.app-prose`). Fonts load through Astro's top-level `fonts` API. Content is authored in Markdown/MDX (`src/data/blog/`) with an optional Keystatic CMS at `/keystatic`. **Design tokens and the component library are authored in Figma and treated as the source of truth**, synced into the repo via `/figma-sync`.
 
 ---
 
@@ -50,7 +50,7 @@ A personal blog (author: Peter Esveld) built on **Astro v6** (AstroPaper templat
 - **Don't bind `lineHeight` or `letterSpacing` to variables in Figma Text Styles.** On this Figma version, binding coerces the unit `PERCENT → PIXELS` and breaks scaling. Keep those two as literal percent values; only `fontSize`, `fontFamily`, and `fontWeight` are variable-bound.
 - **Don't hardcode hex colors in Figma components/icons.** Bind fills/strokes to the `Blog Tokens` color variables (e.g. `foreground` = VariableID:5:4) so light/dark works.
 - **Don't use Sora for body/UI text**, and don't use Inter for headings — see the typeface roles above.
-- **Don't bump `zod` past `4.3.6`** (pinned via `overrides` in `pnpm-workspace.yaml`; Astro 6.4.x needs the v3-style `z.function().optional()` API). Node must be **≥ 22.12.0**.
+- **Don't remove the `zod` override** (`^4.5.4` in `pnpm-workspace.yaml`); it keeps a single zod on Astro 7's line — see CLAUDE.md. Node must be **≥ 22.12.0**.
 - **Don't reintroduce the X social link.** It was removed from `SOCIALS` in `src/constants.ts` and from the Figma `Socials`/Footer on 2026-07-02. (The separate "share to X" button in `SHARE_LINKS` was intentionally kept.)
 - **Don't assume headings render in Sora in the shipped site yet** — the Sora-headings + full type-scale decision currently lives in Figma only; it is not yet wired into `global.css` (see Open decisions).
 
