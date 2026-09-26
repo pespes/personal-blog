@@ -1,10 +1,12 @@
 ---
-import IconX from "@/assets/icons/IconX.svg";
-import IconMoon from "@/assets/icons/IconMoon.svg";
-import IconSearch from "@/assets/icons/IconSearch.svg";
-import IconArchive from "@/assets/icons/IconArchive.svg";
-import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
-import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
+import {
+  XIcon,
+  MoonIcon,
+  SearchIcon,
+  ArchiveIcon,
+  SunIcon,
+  MenuIcon,
+} from "@lucide/astro";
 import LinkButton from "./LinkButton.astro";
 import Menu from "./Menu.astro";
 import { SITE } from "@/config";
@@ -78,8 +80,8 @@ const isActive = (path: string) => {
         aria-expanded="false"
         aria-controls="menu-items"
       >
-        <IconX id="close-icon" class="hidden" />
-        <IconMenuDeep id="menu-icon" />
+        <XIcon id="close-icon" class="hidden" />
+        <MenuIcon id="menu-icon" />
       </button>
 
       {/* Mobile: collapsible link list (toggled by #menu-btn) */}
@@ -129,7 +131,7 @@ const isActive = (path: string) => {
               title="Archives"
               aria-label="archives"
             >
-              <IconArchive />
+              <ArchiveIcon />
               <span class="sr-only">Archives</span>
             </LinkButton>
           )
@@ -143,7 +145,7 @@ const isActive = (path: string) => {
           title="Search"
           aria-label="search"
         >
-          <IconSearch />
+          <SearchIcon />
           <span class="sr-only">Search</span>
         </LinkButton>
         {
@@ -155,8 +157,8 @@ const isActive = (path: string) => {
               aria-label="auto"
               aria-live="polite"
             >
-              <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-              <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+              <MoonIcon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <SunIcon class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
             </button>
           )
         }

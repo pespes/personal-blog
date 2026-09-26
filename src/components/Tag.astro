@@ -1,5 +1,5 @@
 ---
-import IconHash from "@/assets/icons/IconHash.svg";
+import { HashIcon } from "@lucide/astro";
 
 type Props = {
   tag: string;
@@ -22,7 +22,7 @@ const { tag, tagName, size = "lg" } = Astro.props;
       { "text-lg": size === "lg" },
     ]}
   >
-    <IconHash
+    <HashIcon
       class:list={[
         "opacity-80",
         { "size-5": size === "lg" },

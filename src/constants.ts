@@ -1,5 +1,5 @@
 import type { Props } from "astro";
-import IconMail from "@/assets/icons/IconMail.svg";
+import { MailIcon } from "@lucide/astro";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
 import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
@@ -13,7 +13,7 @@ interface Social {
   name: string;
   href: string;
   linkTitle: string;
-  icon: (_props: Props) => Element;
+  icon: (_props: Props) => unknown;
 }
 
 export const SOCIALS: Social[] = [
@@ -33,7 +33,7 @@ export const SOCIALS: Social[] = [
     name: "Mail",
     href: "mailto:yourmail@gmail.com",
     linkTitle: `Send an email to ${SITE.title}`,
-    icon: IconMail,
+    icon: MailIcon,
   },
 ] as const;
 
@@ -72,6 +72,6 @@ export const SHARE_LINKS: Social[] = [
     name: "Mail",
     href: "mailto:?subject=See%20this%20post&body=",
     linkTitle: `Share this post via email`,
-    icon: IconMail,
+    icon: MailIcon,
   },
 ] as const;

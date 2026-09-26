@@ -8,6 +8,7 @@ A personal blog built with [Astro](https://astro.build/) and deployed to [Cloudf
 
 - **[Astro](https://astro.build/)** — static site framework with MDX support
 - **[Tailwind CSS v4](https://tailwindcss.com/)** — styling
+- **[Lucide](https://lucide.dev/guide/astro/getting-started)** — UI icons via `@lucide/astro` (brand logos stay as SVGs in `src/assets/icons/`, since Lucide ships none)
 - **[Keystatic](https://keystatic.com/)** — CMS for managing blog posts
 - **[Pagefind](https://pagefind.app/)** — static search
 - **[Cloudflare Pages](https://pages.cloudflare.com/)** — hosting

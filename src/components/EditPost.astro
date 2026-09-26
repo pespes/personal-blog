@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import IconEdit from "@/assets/icons/IconEdit.svg";
+import { SquarePenIcon } from "@lucide/astro";
 import { SITE } from "@/config";
 
 type Props = {
@@ -27,7 +27,7 @@ const showEditPost =
         className,
       ]}
     >
-      <IconEdit class="inline-block" />
+      <SquarePenIcon class="inline-block" />
       <span>{SITE.editPost.text}</span>
     </a>
   )
