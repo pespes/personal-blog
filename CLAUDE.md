@@ -96,6 +96,7 @@ import Video from '@/components/Video.astro';
 - **`src/config.ts` still has AstroPaper defaults** — `website`, `profile`, `desc`, `editPost.url`, and `timezone` all need updating before going live (`author`/`title` are already personalized).
 - **Dynamic OG images are a feature flag (`dynamicOgImage`)** — currently **disabled** in `config.ts`. When enabled, posts without an explicit `ogImage` get an OG image auto-generated at build time via Satori (adds ~1s per post).
 - **Nested blog directories** — subdirectories prefixed with `_` (e.g., `_releases/`) are excluded from URL slugs. Other nested dirs are included.
+- **Changing a Shiki transformer (`src/utils/transformers/`) needs a content-cache clear** — Astro caches rendered Markdown, so old classes survive a rebuild (and render unstyled once Tailwind stops generating them). Run `rm -f .astro/data-store.json && rm -rf node_modules/.astro` before building.
 - **Scheduled posts** — posts with `pubDatetime` up to 15 minutes in the future will still be published (controlled by `scheduledPostMargin` in `config.ts`).
 
 ### Astro 7 migration notes
@@ -112,7 +113,7 @@ import Video from '@/components/Video.astro';
 
 [`docs/design.md`](docs/design.md) is the single design reference: color tokens and their light/dark values, how theme switching works, typography, icons, component inventory, guardrails, and open decisions. **Read it before generating or changing UI.**
 
-- The code is the source of truth. Color tokens are hand-authored CSS custom properties in `src/styles/global.css` (mapped to Tailwind via `@theme inline`); there is no Figma/token sync.
+- The code is the source of truth. Color, shadow, focus-ring and type tokens are the **HeroUI v3 theme layer** in `src/styles/heroui-theme.css` (imported by `global.css`, mapped to Tailwind via `@theme inline`), adapted by hand from the HeroUI Figma Kit V3; there is no Figma/token sync. Links are `text-link` + underline — don't use `text-accent` for text.
 - **Keep `docs/design.md` current:** whenever you make or change a **design-architecture decision** — color tokens, typeface roles, the theming mechanism, naming conventions, a guardrail, component structure, or resolving one of its open decisions — update `docs/design.md` in the **same change**: edit the relevant section and append a dated entry to its Change log.
 
 ## Figma — use Figma Console MCP

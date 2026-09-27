@@ -9,12 +9,30 @@
     h2,
     h3,
     h4,
+    h5,
+    h6,
     th {
       @apply mb-3 text-foreground;
     }
 
+    /* HeroUI heading scale (Figma "Heading 1–6"). */
+    h1 {
+      @apply type-h1;
+    }
+    h2 {
+      @apply type-h2;
+    }
     h3 {
-      @apply italic;
+      @apply type-h3;
+    }
+    h4 {
+      @apply type-h4;
+    }
+    h5 {
+      @apply type-h5;
+    }
+    h6 {
+      @apply type-h6;
     }
 
     p,
@@ -28,7 +46,7 @@
     }
 
     a {
-      @apply wrap-break-word text-foreground decoration-dashed underline-offset-4 hover:text-accent focus-visible:no-underline;
+      @apply wrap-break-word text-link underline decoration-muted underline-offset-4 hover:decoration-foreground;
     }
 
     ul {
@@ -36,11 +54,11 @@
     }
 
     li {
-      @apply marker:text-accent;
+      @apply marker:text-muted;
     }
 
     hr {
-      @apply border-border;
+      @apply border-separator;
     }
 
     img {
@@ -67,7 +85,7 @@
     }
 
     code {
-      @apply rounded bg-muted/75 p-1 wrap-break-word text-foreground before:content-none after:content-none;
+      @apply rounded bg-surface-tertiary/75 p-1 wrap-break-word text-foreground before:content-none after:content-none;
     }
 
     .astro-code code {
@@ -83,11 +101,11 @@
     }
 
     summary {
-      @apply focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply focus-ring;
     }
 
     pre {
-      @apply focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply focus-ring;
     }
   }
 
@@ -104,13 +122,13 @@
   /* https://shiki.style/packages/transformers */
   .astro-code {
     .line.diff.add {
-      @apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
+      @apply relative inline-block w-full bg-success-soft before:absolute before:-left-3 before:text-success-soft-foreground before:content-['+'];
     }
     .line.diff.remove {
-      @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
+      @apply relative inline-block w-full bg-danger-soft before:absolute before:-left-3 before:text-danger-soft-foreground before:content-['-'];
     }
     .line.highlighted {
-      @apply inline-block w-full bg-slate-400/20;
+      @apply inline-block w-full bg-default;
     }
     .highlighted-word {
       @apply rounded-sm border border-border px-0.5 py-px;

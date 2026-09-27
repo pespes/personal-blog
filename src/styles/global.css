@@ -1,40 +1,21 @@
 @import "tailwindcss";
+/* Color, radius, shadow, focus and type tokens: HeroUI v3 theme layer.
+   See docs/design.md. */
+@import "./heroui-theme.css";
 @import "./typography.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-/* Semantic color tokens — the only place color values live. See docs/design.md. */
-:root,
-html[data-theme="light"] {
-  --accent: #006cac;
-  --background: #fdfdfd;
-  --border: #ece9e9;
-  --foreground: #282728;
-  --muted: #e6e6e6;
-}
-html[data-theme="dark"] {
-  --accent: #5db1e8;
-  --background: #1c1917;
-  --border: #57534e;
-  --foreground: #ffffff;
-  --muted: #292524;
-}
-
 @theme inline {
   --font-app: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-muted: var(--muted);
-  --color-border: var(--border);
 }
 
 @layer base {
   * {
-    @apply border-border outline-accent/75;
+    @apply border-border outline-focus;
     scrollbar-width: auto;
-    scrollbar-color: var(--color-muted) transparent;
+    scrollbar-color: var(--surface-tertiary) transparent;
   }
   html {
     @apply overflow-y-scroll scroll-smooth;
@@ -44,7 +25,7 @@ html[data-theme="dark"] {
   }
   a,
   button {
-    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply focus-ring;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -54,12 +35,6 @@ html[data-theme="dark"] {
 
 @utility max-w-app {
   @apply max-w-3xl;
-}
-
-/* Dashed accent focus ring. Links and buttons get it from the base layer;
-   add this to any other focusable element (or to restate it on a control). */
-@utility focus-outline {
-  @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
 }
 
 @utility app-layout {

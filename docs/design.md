@@ -12,6 +12,7 @@ A personal blog (author: Peter Esveld) built on **Astro v7** (AstroPaper templat
 
 | Concern | Tool | Where |
 | --- | --- | --- |
+| Design system | **HeroUI v3** theme layer (tokens, type styles, shadows, focus ring) — CSS only, no HeroUI React components | `src/styles/heroui-theme.css` |
 | Styling | **Tailwind CSS v4** — CSS-first config (`@import "tailwindcss"` + `@theme inline`), no `tailwind.config.js` | `src/styles/global.css` |
 | Long-form content | `@tailwindcss/typography`, customised as `.app-prose` | `src/styles/typography.css` |
 | Fonts | **Inter** everywhere + **JetBrains Mono** for code, via Astro's top-level `fonts` API (Google provider) | `astro.config.ts`, `<Font>` in `src/layouts/Layout.astro` |
@@ -23,9 +24,9 @@ A personal blog (author: Peter Esveld) built on **Astro v7** (AstroPaper templat
 
 ## Source of truth
 
-**The code is the source of truth for all design values.** There is no token pipeline or design-tool sync: colors are hand-authored CSS custom properties in `src/styles/global.css`, and everything else is Tailwind utilities in components.
+**The code is the source of truth for all design values.** There is no token pipeline or design-tool sync: colors, shadows, focus rings and type styles are hand-authored in `src/styles/heroui-theme.css` (adapted once, by hand, from the HeroUI Figma Kit V3 — see [Color tokens](#color-tokens)), and everything else is Tailwind utilities in components.
 
-Figma files exist as sketch/mockup references only (main file "Personal blog": `FdZ1cB4BCyXrA8YlOOXbm0`, which replaced the earlier design-system file `m8DPlUQk60FzGE02CnrhS2` on 2026-09-26; playground: `u3YqsuB3YHy2SmlZwSfv3C`). They are **not** synced and may lag behind the code — when Figma and code disagree, the code wins. Work with Figma through the **Figma Console MCP** (`figma-console`); see the Figma section of [`CLAUDE.md`](../CLAUDE.md).
+Figma files exist as sketch/mockup references only (design-system reference: "HeroUI Figma Kit V3 (Community)" `Rtri93bnzqBZuWUHkgp7XI`; main file "Personal blog": `FdZ1cB4BCyXrA8YlOOXbm0`, which replaced the earlier design-system file `m8DPlUQk60FzGE02CnrhS2` on 2026-09-26; playground: `u3YqsuB3YHy2SmlZwSfv3C`). They are **not** synced and may lag behind the code — when Figma and code disagree, the code wins. Work with Figma through the **Figma Console MCP** (`figma-console`); see the Figma section of [`CLAUDE.md`](../CLAUDE.md).
 
 ---
 
@@ -33,23 +34,39 @@ Figma files exist as sketch/mockup references only (main file "Personal blog": `
 
 ### Color tokens
 
-Five semantic color tokens, each with a light and dark value. They are the **only** place color values are defined.
+The palette is **HeroUI v3's theme layer**, extracted 2026-09-26 from the `02_Theme (HeroUI)` variable collection of the HeroUI Figma Kit V3 (`Rtri93bnzqBZuWUHkgp7XI`) and adapted into `src/styles/heroui-theme.css` — the **only** place color values are defined. The kit's `01_Base (Tailwind)` collection and `tailwind/*` styles are stock Tailwind v4 and were not taken.
 
-| Token | Tailwind utility | Role | Light | Dark |
-| --- | --- | --- | --- | --- |
-| `--background` | `bg-background` | Page background | `#fdfdfd` | `#1c1917` |
-| `--foreground` | `text-foreground` | Body text, icons | `#282728` | `#ffffff` |
-| `--accent` | `text-accent`, `bg-accent`, `outline-accent` | Links on hover, active states, focus rings, CTA, list markers | `#006cac` | `#5db1e8` |
-| `--muted` | `bg-muted` | Inline code background, scrollbar thumb, subtle fills | `#e6e6e6` | `#292524` |
-| `--border` | `border-border` | Dividers, card/image/table borders (default border color for `*`) | `#ece9e9` | `#57534e` |
+Figma group paths are flattened to HeroUI's CSS names (`accent/accent` → `--accent`, `foreground/muted` → `--muted`, `foreground/link` → `--link`, `focus-ring` → `--focus`, `field/background` → `--field-background`). The file is the full reference for values; the roles are:
+
+| Group | Tokens (Tailwind: `bg-*` / `text-*` / `border-*`) | Role |
+| --- | --- | --- |
+| Canvas | `background` (+ `-secondary`, `-tertiary`, `-inverse`), `foreground` | Page background (`#f5f5f5` / `#060607`) and body text (`#18181b` / `#fcfcfc`) |
+| Text | `muted`, `link` | Secondary text (dates, captions, prev/next titles); links (= `foreground`, distinguished by underline) |
+| Surfaces | `surface` (+ `-secondary`, `-tertiary`, each with `-foreground`) | Cards and panels on the canvas. `surface-tertiary` is the subtle fill for inline code, the code-copy button, the code-filename tab, search tips and the scrollbar thumb. |
+| Overlays | `overlay`, `overlay-foreground`, `backdrop` | Popovers, menus, modals |
+| Lines | `border`, `separator` (+ `-secondary`, `-tertiary`) | `border` is the default for `*`; `separator` for dividers |
+| Focus | `focus` (= `accent`) | Focus rings |
+| Status | `default`, `accent`, `success`, `warning`, `danger` | Each has six slots: base, `-hover`, `-foreground`, `-soft`, `-soft-hover`, `-soft-foreground` |
+| Forms | `field` (+ `-hover`, `-focus`), `field-foreground`, `field-placeholder`, `field-border` (+ `-hover`) | Inputs. Field borders are fully transparent in HeroUI; fields get their edge from `shadow-field`. |
+| Other | `segment`, `segment-foreground`, `chart-1…5` | Segmented controls, charts |
+
+The full HeroUI set is kept even where nothing consumes it yet (fields, segment, charts, status colors): unused variables cost nothing and keep parity with HeroUI.
+
+**Accent is for fills, not text.** `--accent` (`#0485f7`, same in both modes) is only 3.38:1 on the light background, so it is used for fills (the Menu CTA, selection, the reading-progress bar, the back-to-top ring), non-text graphics (active header-icon strokes, blockquote rule — 3:1 is the bar there) and the large 404 display text. Links follow HeroUI: `text-link` (= foreground) + underline. If a colored text link is ever needed, use `text-accent-soft-foreground` (5.59:1 light / 8.21:1 dark).
+
+**Known contrast shortfalls, accepted for now:** white label on an accent button (`accent-foreground` on `accent`) is 3.59:1 (AA only for large/bold text); `muted` on `background` in light mode is 4.43:1.
 
 **How they're wired (three layers — keep this order):**
 
-1. **Raw values** — defined on `:root, html[data-theme="light"]` and `html[data-theme="dark"]` in `global.css`.
-2. **Tailwind mapping** — the `@theme inline` block maps each to a `--color-*` theme variable (`--color-accent: var(--accent)`, …), which generates the utilities above. `inline` means utilities reference the live variable, so they switch with the theme with no `dark:` variants needed.
-3. **Components** — use only the semantic utilities (`text-accent`, `border-border`, `bg-background/90`, `outline-accent/75`). Opacity modifiers are fine; new hex values are not.
+1. **Raw values** — on `:root, html[data-theme="light"]` and `html[data-theme="dark"]` in `heroui-theme.css`. Theme-independent values (`--border-width`, `--field-radius`, `--disabled-opacity`, `--ring-offset-width`, `--ring-focus-width`, …) are on `:root`.
+2. **Tailwind mapping** — the `@theme inline` block in the same file maps each to a `--color-*` theme variable, which generates the utilities. `inline` means utilities reference the live variable, so they switch with the theme with no `dark:` variants needed. It also maps `--radius-field` (`rounded-field`) and the shadows.
+3. **Components** — use only semantic utilities (`text-muted`, `bg-surface-tertiary`, `bg-accent`, `border-border`, `bg-background/90`). Opacity modifiers are fine; new hex values are not.
 
-To add a token: add the variable to **both** theme blocks, map it in `@theme inline`, then add a row to the table above.
+To add a token: add the variable to **both** theme blocks, map it in `@theme inline`, then update the table above.
+
+### Shadows
+
+From HeroUI's Figma effect styles, as `shadow-*` utilities: `shadow-surface` (cards), `shadow-field` (inputs), `shadow-overlay` (floating panels — used by the `Menu` pill), `shadow-switch`, `shadow-tab`, and `inset-shadow-inner`. Their colors are tokens, so in dark mode the drop shadows go transparent and only the 1px inner highlight remains.
 
 ### Light / dark mode
 
@@ -72,16 +89,28 @@ To add a token: add the variable to **both** theme blocks, map it in `@theme inl
 
 Both fonts are registered in `astro.config.ts` (`fonts: [...]`) **and** need a `<Font>` tag in `Layout.astro` — registering alone doesn't load a font. To add a weight, add it to the `weights` array.
 
-- **Type scale:** Tailwind's default scale, applied per component. There are no custom type tokens.
-- **Article content** is styled by `.app-prose` (`typography.css`), which layers on `prose` and recolors everything to the semantic tokens: `text-foreground` for text, `accent` for list markers, blockquote rule and link hover, `border-border` for rules/tables/images, `bg-muted/75` for inline code. Headings get `mb-3`; `h3` is italic.
+- **Type styles** come from HeroUI's Figma text styles as `type-*` utilities in `heroui-theme.css` (all Inter, letter-spacing 0):
+
+  | Utility | Size / leading | Weight |
+  | --- | --- | --- |
+  | `type-h1` … `type-h6` | 36/40, 30/36, 24/32, 20/28, 18/28, 16/24 | Semibold |
+  | `type-body`, `type-body-sm`, `type-body-xs` (+ `-medium`) | 16/28, 14/24, 12/20 | Regular (Medium) |
+  | `type-link`, `type-link-sm` | 16/24 underlined, 14/20 underline-on-hover | Medium |
+  | `type-field`, `type-field-sm`, `type-button`, `type-button-sm` | 16/24, 14/20 | Regular / Medium |
+
+  Headings match Tailwind's default size/leading pairs; body styles use one step looser leading for long-form reading. Other text uses Tailwind's default scale directly.
+- **Article content** is styled by `.app-prose` (`typography.css`), which layers on `prose`. Headings `h1`–`h6` use `type-h1`…`type-h6` (not the typography plugin's sizes) with `mb-3`. Text is `text-foreground`; links are `text-link` with a `muted` underline that turns `foreground` on hover; list markers are `muted`; inline code is `bg-surface-tertiary/75`; `hr` uses `border-separator`; tables and images use `border-border`.
+- **Code-block annotations** (Shiki transformers, `typography.css`) use status tokens: diff add = `bg-success-soft` with a `success-soft-foreground` `+`, diff remove = `bg-danger-soft` with a `danger-soft-foreground` `−`, highlighted line = `bg-default`. The filename tab's dot is `bg-success`.
 
 ### Layout & interaction conventions
 
 - **Content width:** `max-w-app` (= `max-w-3xl`) and `app-layout` (centred, `px-4`) utilities in `global.css`. Use these, not ad-hoc max-widths.
-- **Focus:** the focus ring is a **2px dashed `accent` outline, offset 1px, shown on `:focus-visible`** (plus no underline while focused). Every `a` and `button` gets it from the base layer in `global.css`. The same ring is also available as the **`focus-outline` utility** (`@utility focus-outline` in `global.css`), used on the header's icon controls (menu toggle, archives, search, theme toggle) and on `BackButton`. Add `focus-outline` to any other focusable element (e.g. a `[tabindex]` or `role="button"` element) so it matches. Never remove outlines.
+- **Focus:** HeroUI's ring — **a 2px solid `focus` (accent) ring after a 2px `background`-colored gap, on `:focus-visible`** — as the **`focus-ring` utility** (`heroui-theme.css`). It is built on Tailwind's `ring-*` utilities, so it stacks with an element's own `shadow-*` instead of replacing it. Every `a` and `button` gets it from the base layer in `global.css`; `summary` and `pre` in `.app-prose` apply it too, and the header's icon controls and `BackButton` restate it. Add `focus-ring` to any other focusable element (e.g. a `[tabindex]` or `role="button"` element). Inputs use **`focus-ring-field`** (2px ring, no gap). Pagefind renders its own markup, so `search.astro` restates both rings in plain CSS. Never remove focus indicators.
+- **Borders are solid.** Section dividers (header, footer, home-page section break, post `hr`s) use `border-separator`; component outlines use `border-border`. Tag links have a solid 2px `foreground` underline. No dashed borders or underlines.
 - **Active nav item:** `.active-nav` (underline); icon buttons also switch their SVG stroke to accent (`[&>svg]:stroke-accent`).
+- **Links:** `text-link` + underline (`underline-offset-4`); UI links (nav, `LinkButton`, `EditPost`, back-to-top) underline on hover instead of changing color.
 - **Selection:** `bg-accent/75` with `text-background`.
-- **Header:** the `Menu.astro` pill is the primary nav on `sm+` (translucent `bg-background/90` + `backdrop-blur`, `border-border`, soft shadow, accent CTA pill). On mobile it's a hamburger + dropdown `#menu-items`. Search / archives / theme toggle are an always-visible cluster outside the menu. Current items: Home, Posts, About + "Email me" CTA.
+- **Header:** the `Menu.astro` pill is the primary nav on `sm+` (translucent `bg-background/90` + `backdrop-blur`, `border-border`, `shadow-overlay`, accent CTA pill with `text-accent-foreground` / `hover:bg-accent-hover`). On mobile it's a hamburger + dropdown `#menu-items`. Search / archives / theme toggle are an always-visible cluster outside the menu. Current items: Home, Posts, About + "Email me" CTA.
 
 ### Icons
 
@@ -113,13 +142,15 @@ Most components accept a `class` prop and merge it with `class:list` — follow 
 
 ## Guardrails — do not do this
 
-- **Don't hardcode colors in components.** No hex, `rgb()`, or Tailwind palette colors (`text-blue-600`) for UI. Use the five semantic tokens. The existing exceptions are deliberate: the `Menu` drop shadow (`rgb(0 0 0 / 0.16)`), the Shiki diff/highlight tints in `typography.css`, and the OG templates.
+- **Don't hardcode colors in components.** No hex, `rgb()`, or Tailwind palette colors (`text-blue-600`) for UI. Use the semantic tokens. The one deliberate exception is the OG templates.
+- **Don't use `text-accent` for text.** It fails AA on the light background. Links are `text-link` + underline; accent is for fills and non-text graphics (see [Color tokens](#color-tokens)).
+- **Don't reuse old token meanings.** `--muted` is secondary *text* (HeroUI), not a fill — subtle fills are `surface-tertiary`.
 - **Don't add a token to only one theme.** Every color variable needs a light and a dark value.
 - **Don't use `@media (prefers-color-scheme)` for theming.** Use the `dark:` variant or tokens — the OS preference only feeds the initial choice.
 - **Don't remove or reorder the inline theme script in `Layout.astro`** — it prevents the flash of the wrong theme.
 - **Don't add a `tailwind.config.js`.** Tailwind v4 config lives in CSS (`@theme inline`, `@custom-variant`, `@utility`).
 - **Don't add another typeface.** Inter covers all text, including headings; JetBrains Mono covers code. Style headings with weight and size, not a new family.
-- **Don't hand-roll focus styles.** Use real `a`/`button` elements or the `focus-outline` utility.
+- **Don't hand-roll focus styles.** Use real `a`/`button` elements or the `focus-ring` / `focus-ring-field` utilities.
 - **Don't reintroduce the X social link.** It was removed from `SOCIALS` on 2026-07-02. (The "share to X" button in `SHARE_LINKS` is separate and intentionally kept.)
 
 ---
@@ -148,3 +179,6 @@ Update `design.md` in the **same change** whenever you make or change a design-a
 - 2026-09-26: **Removed the Figma ⇄ code token sync.** Code is now the single source of truth for design values; Figma is a non-synced sketch reference. Deleted `scripts/figma-sync/` (+ its Vitest suite), `design/` (`tokens.json`, `components.json`, sync state, generated overview), the `/figma-sync` command, `docs/component-parity.md`, and the Figma planning docs under `docs/superpowers/`. The `figma-tokens` markers in `global.css` became a plain hand-authored block. Dropped the `figma:sync` / `test` scripts and the `vitest` + `tsx` dev dependencies. Consolidated theming documentation into this file, recording that the Figma-era Sora-headings / JetBrains Mono decisions were never implemented (now an open decision). Removed Tags from the header nav.
 - 2026-09-26: **Typography settled on Inter everywhere + JetBrains Mono for code.** Switched generated OG images from IBM Plex Mono to **Inter**. Removed the unused **Sora** font and its `--font-display` mapping (superseding the 2026-07-02 Sora-headings decision, which never shipped). Added **JetBrains Mono** (400/700, normal + italic) as `--font-mono`, so code blocks and inline code now use it. Defined the **`focus-outline`** utility in `global.css` (it was used in `Header`/`BackButton` but never defined) with the same dashed accent ring as links and buttons.
 - 2026-09-26: Moved this file from the repo root to **`docs/design.md`**; `docs/` is now the home for project documentation (README.md, CLAUDE.md and LICENSE stay at the root, where GitHub and Claude Code look for them).
+- 2026-09-26: **Started the HeroUI v3 overhaul.** Extracted the `02_Theme (HeroUI)` variables (83, Light/Dark), the 19 semantic text styles and the 10 HeroUI effect styles from the HeroUI Figma Kit V3 (`Rtri93bnzqBZuWUHkgp7XI`), skipping the stock-Tailwind base layer. Adapted them into the staged `src/styles/heroui-theme.css` (`html[data-theme]` blocks, `@theme inline` mappings, `type-*` and `focus-ring` utilities). It is not imported yet; see `docs/heroui-tokens.md`.
+- 2026-09-26: **Adopted the HeroUI v3 theme layer.** `heroui-theme.css` is now imported by `global.css` and replaces the five AstroPaper-era tokens (`--background` `#fdfdfd`/`#1c1917`, `--foreground`, `--accent` `#006cac`/`#5db1e8`, `--muted` fill, `--border`). Decisions: old `--muted` fills → `surface-tertiary` (closest match in both modes); accent no longer used as text — links are `text-link` + underline, UI links underline on hover, prev/next titles are `text-muted`, post titles are `type-h2 sm:type-h1` in `foreground`; HeroUI's cool-grey canvas and solid `focus-ring` replace the warm canvas and the dashed `focus-outline` utility (removed); `.app-prose` headings use `type-h1…h6` (h3 is no longer italic); the full HeroUI token set is kept; the `Menu` pill uses `shadow-overlay` (removing its hardcoded-shadow exception) and `accent-foreground` / `accent-hover`. Button-label (3.59:1) and light `muted` text (4.43:1) contrast accepted for now. Folded `docs/heroui-tokens.md` into this file.
+- 2026-09-26: Moved the last hardcoded UI colors onto HeroUI tokens: Shiki diff add/remove → `success-soft`/`danger-soft` (+ `-soft-foreground` glyphs), highlighted lines → `default`, filename-tab dot → `success`. Replaced all dashed borders/underlines with solid ones: tag underlines (still `foreground`), the 404 home link, and section dividers — which now use `border-separator` (post `hr`s, prose `hr`, header, footer, home-page section break). Removed the Shiki-tint exception from the guardrails.

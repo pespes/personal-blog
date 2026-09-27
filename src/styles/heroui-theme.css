@@ -1,0 +1,410 @@
+/*
+ * HeroUI v3 theme layer, adapted for this blog. Imported by global.css; these
+ * are the only place color values live. See docs/design.md.
+ *
+ * Extracted 2026-09-26 from the "HeroUI Figma Kit V3 (Community)" file
+ * (Rtri93bnzqBZuWUHkgp7XI): the `02_Theme (HeroUI)` and `03_Typography`
+ * variable collections, the semantic text styles, and the non-Tailwind effect
+ * styles. The `01_Base (Tailwind)` collection and the `tailwind/*` styles are
+ * stock Tailwind v4 and are intentionally omitted.
+ *
+ * Adaptations vs Figma:
+ *  - Light/Dark modes → html[data-theme] blocks (the blog's theming mechanism).
+ *  - Figma groups are flattened: `accent/accent` → --accent,
+ *    `foreground/muted` → --muted, `foreground/link` → --link,
+ *    `focus-ring` → --focus, `field/background` → --field-background.
+ *  - Alpha colors are written as 8-digit hex, exactly as in Figma.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Color + theme-dependent tokens                                      */
+/* ------------------------------------------------------------------ */
+
+:root,
+html[data-theme="light"] {
+  /* Canvas */
+  --background: #f5f5f5;
+  --background-secondary: #ebebeb;
+  --background-tertiary: #e1e1e1;
+  --background-inverse: #18181b;
+  --foreground: #18181b;
+  --muted: #71717a; /* muted TEXT — not a fill */
+  --link: var(--foreground);
+
+  /* Surfaces (cards, panels) */
+  --surface: #ffffff;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #efeff0;
+  --surface-secondary-foreground: var(--foreground);
+  --surface-tertiary: #eaeaeb;
+  --surface-tertiary-foreground: var(--foreground);
+
+  /* Overlays (popovers, menus, modals) */
+  --overlay: #ffffff;
+  --overlay-foreground: #18181b;
+  --backdrop: #00000080;
+
+  /* Segment (selected item in a segmented control / tabs) */
+  --segment: #ffffff;
+  --segment-foreground: #18181b;
+
+  /* Lines */
+  --border: #dedee0;
+  --separator: #e4e4e7;
+  --separator-secondary: #d7d7d7;
+  --separator-tertiary: #cdcdce;
+  --focus: var(--accent);
+
+  /* Status: default (neutral) */
+  --default: #ebebec;
+  --default-hover: #e1e1e2;
+  --default-foreground: #18181b;
+  --default-soft: #ebebec80;
+  --default-soft-hover: #ebebec99;
+  --default-soft-foreground: var(--default-foreground);
+
+  /* Status: accent */
+  --accent: #0485f7;
+  --accent-hover: #3592f9;
+  --accent-foreground: #fcfcfc;
+  --accent-soft: #0485f726;
+  --accent-soft-hover: #0485f733;
+  --accent-soft-foreground: #1d63ae;
+
+  /* Status: success */
+  --success: #17c964;
+  --success-hover: #21b55d;
+  --success-foreground: #18181b;
+  --success-soft: #17c96426;
+  --success-soft-hover: #17c96433;
+  --success-soft-foreground: #2b7744;
+
+  /* Status: warning */
+  --warning: #f5a524;
+  --warning-hover: #dc952a;
+  --warning-foreground: #18181b;
+  --warning-soft: #f5a52426;
+  --warning-soft-hover: #dc952a33;
+  --warning-soft-foreground: #855f2c;
+
+  /* Status: danger */
+  --danger: #ff383c;
+  --danger-hover: #ff5551;
+  --danger-foreground: #fcfcfc;
+  --danger-soft: #ff383c26;
+  --danger-soft-hover: #ff555133;
+  --danger-soft-foreground: #a43532;
+
+  /* Form fields */
+  --field-background: #ffffff;
+  --field-background-hover: #f9f9f9eb;
+  --field-background-focus: #ffffff;
+  --field-foreground: var(--foreground);
+  --field-placeholder: var(--muted);
+  --field-border: #dedee000;
+  --field-border-hover: #c1c1c100;
+
+  /* Charts (same in both modes) */
+  --chart-1: #0038a5;
+  --chart-2: #005fce;
+  --chart-3: #0485f7;
+  --chart-4: #42acff;
+  --chart-5: #6cd4ff;
+
+  /* Shadow colors */
+  --shadow-inner: #0000004d;
+  --field-shadow: #0000000a;
+  --field-shadow-2: #0000000f;
+  --overlay-shadow: #00000000;
+  --shadow-scroll: var(--background);
+  --shadow-scroll-on-surface: var(--surface);
+  --shadow-scroll-blur: #f5f5f5b2;
+  --shadow-scroll-blur-on-surface: #ffffffb2;
+}
+
+html[data-theme="dark"] {
+  --background: #060607;
+  --background-secondary: #0c0c0e;
+  --background-tertiary: #131316;
+  --background-inverse: #fcfcfc;
+  --foreground: #fcfcfc;
+  --muted: #a1a1aa;
+  --link: var(--foreground);
+
+  --surface: #18181b;
+  --surface-foreground: var(--foreground);
+  --surface-secondary: #232325;
+  --surface-secondary-foreground: var(--foreground);
+  --surface-tertiary: #262728;
+  --surface-tertiary-foreground: var(--foreground);
+
+  --overlay: #18181b;
+  --overlay-foreground: #fcfcfc;
+  --backdrop: #00000080;
+
+  --segment: #46464c;
+  --segment-foreground: #fcfcfc;
+
+  --border: #28282c;
+  --separator: #1a1a1d;
+  --separator-secondary: #353538;
+  --separator-tertiary: #3c3c3f;
+  --focus: var(--accent);
+
+  --default: #27272a;
+  --default-hover: #2e2e31;
+  --default-foreground: #fcfcfc;
+  --default-soft: #27272a80;
+  --default-soft-hover: #27272a99;
+  --default-soft-foreground: var(--default-foreground);
+
+  --accent: #0485f7;
+  --accent-hover: #3592f9;
+  --accent-foreground: #fcfcfc;
+  --accent-soft: #0485f71f;
+  --accent-soft-hover: #0485f729;
+  --accent-soft-foreground: #61a8fc;
+
+  --success: #17c964;
+  --success-hover: #21b55d;
+  --success-foreground: #18181b;
+  --success-soft: #17c9641f;
+  --success-soft-hover: #17c96429;
+  --success-soft-foreground: #74d88f;
+
+  --warning: #f7b750;
+  --warning-hover: #dea54c;
+  --warning-foreground: #18181b;
+  --warning-soft: #f7b7501f;
+  --warning-soft-hover: #dea54c29;
+  --warning-soft-foreground: #f9cb87;
+
+  --danger: #db3b3e;
+  --danger-hover: #e15451;
+  --danger-foreground: #fcfcfc;
+  --danger-soft: #db3b3e26;
+  --danger-soft-hover: #e1545133;
+  --danger-soft-foreground: #eb7872;
+
+  --field-background: #18181b;
+  --field-background-hover: #1c1c1feb;
+  --field-background-focus: #18181b;
+  --field-foreground: var(--foreground);
+  --field-placeholder: var(--muted);
+  --field-border: #28282c00;
+  --field-border-hover: #46464600;
+
+  --chart-1: #0038a5;
+  --chart-2: #005fce;
+  --chart-3: #0485f7;
+  --chart-4: #42acff;
+  --chart-5: #6cd4ff;
+
+  --shadow-inner: #ffffff4d;
+  --field-shadow: #ffffff00;
+  --field-shadow-2: #ffffff00;
+  --overlay-shadow: #ffffff4d;
+  --shadow-scroll: var(--background);
+  --shadow-scroll-on-surface: var(--surface);
+  --shadow-scroll-blur: #060607b2;
+  --shadow-scroll-blur-on-surface: #18181bb2;
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme-independent tokens (same value in Light and Dark)             */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --border-width: 1px;
+  --border-width-control: 0px; /* sliders */
+  --field-border-width: 1px; /* inputs, selects, form elements */
+  --field-radius: 0.75rem; /* 12px = rounded-xl */
+  --disabled-opacity: 0.5;
+  --blur: 0px; /* surface/field backdrop blur; 0 = off in this kit */
+  --depth: 0px; /* field inner-highlight size; 0 = off in this kit */
+  --ring-offset-width: 2px;
+  --ring-focus-width: 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tailwind mapping                                                    */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-background-inverse: var(--background-inverse);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-link: var(--link);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-secondary-foreground: var(--surface-secondary-foreground);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-tertiary-foreground: var(--surface-tertiary-foreground);
+
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-backdrop: var(--backdrop);
+  --color-segment: var(--segment);
+  --color-segment-foreground: var(--segment-foreground);
+
+  --color-border: var(--border);
+  --color-separator: var(--separator);
+  --color-separator-secondary: var(--separator-secondary);
+  --color-separator-tertiary: var(--separator-tertiary);
+  --color-focus: var(--focus);
+
+  --color-default: var(--default);
+  --color-default-hover: var(--default-hover);
+  --color-default-foreground: var(--default-foreground);
+  --color-default-soft: var(--default-soft);
+  --color-default-soft-hover: var(--default-soft-hover);
+  --color-default-soft-foreground: var(--default-soft-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-hover: var(--accent-soft-hover);
+  --color-accent-soft-foreground: var(--accent-soft-foreground);
+
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-success-soft-hover: var(--success-soft-hover);
+  --color-success-soft-foreground: var(--success-soft-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-soft-hover: var(--warning-soft-hover);
+  --color-warning-soft-foreground: var(--warning-soft-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-soft-hover: var(--danger-soft-hover);
+  --color-danger-soft-foreground: var(--danger-soft-foreground);
+
+  --color-field: var(--field-background);
+  --color-field-hover: var(--field-background-hover);
+  --color-field-focus: var(--field-background-focus);
+  --color-field-foreground: var(--field-foreground);
+  --color-field-placeholder: var(--field-placeholder);
+  --color-field-border: var(--field-border);
+  --color-field-border-hover: var(--field-border-hover);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-field: var(--field-radius);
+
+  /* Effect styles → shadow-* utilities */
+  --shadow-surface:
+    0 0 1px 0 var(--field-shadow-2), 0 1px 2px 0 var(--field-shadow-2),
+    0 2px 4px 0 var(--field-shadow), inset 0 0 1px 0 var(--shadow-inner);
+  --shadow-field:
+    0 0 1px 0 var(--field-shadow-2), 0 1px 2px 0 var(--field-shadow-2),
+    0 2px 4px 0 var(--field-shadow),
+    inset 0 var(--depth) var(--depth) 0 #ffffff1a;
+  --shadow-overlay:
+    0 14px 28px 0 #00000014, 0 -6px 12px 0 #00000008, 0 2px 8px 0 #0000000f,
+    inset 0 0 1px 0 var(--overlay-shadow);
+  --shadow-switch:
+    0 0 5px 0 #00000005, 0 2px 10px 0 #0000000f, 0 0 1px 0 #0000004d;
+  --shadow-tab: 0 2px 8px 0 #0000000f;
+  --inset-shadow-inner: inset 0 0 1px 0 var(--shadow-inner);
+}
+
+/* ------------------------------------------------------------------ */
+/* Focus rings (effect styles `focus-ring`, `focus-ring-field`)        */
+/* ------------------------------------------------------------------ */
+
+/* Figma: an accent spread of --ring-focus-width (4px) under a background spread
+   of --ring-offset-width (2px), both from the element edge — i.e. a 2px accent
+   ring after a 2px gap. Built on Tailwind's ring utilities so it composes with
+   an element's own shadow-* instead of replacing it. */
+@utility focus-ring {
+  @apply outline-none focus-visible:ring-[length:calc(var(--ring-focus-width)-var(--ring-offset-width))] focus-visible:ring-focus focus-visible:ring-offset-(length:--ring-offset-width) focus-visible:ring-offset-background;
+}
+
+/* Tight 2px ring, no gap, for inputs. */
+@utility focus-ring-field {
+  @apply outline-none focus-visible:ring-(length:--ring-offset-width) focus-visible:ring-focus;
+}
+
+/* ------------------------------------------------------------------ */
+/* Type styles (Figma semantic text styles)                            */
+/* All Inter, letter-spacing 0. Sizes/leading are Tailwind defaults    */
+/* except where noted.                                                 */
+/* ------------------------------------------------------------------ */
+
+@utility type-h1 {
+  @apply text-4xl font-semibold; /* 36/40 */
+}
+@utility type-h2 {
+  @apply text-3xl font-semibold; /* 30/36 */
+}
+@utility type-h3 {
+  @apply text-2xl font-semibold; /* 24/32 */
+}
+@utility type-h4 {
+  @apply text-xl font-semibold; /* 20/28 */
+}
+@utility type-h5 {
+  @apply text-lg font-semibold; /* 18/28 */
+}
+@utility type-h6 {
+  @apply text-base font-semibold; /* 16/24 */
+}
+
+/* Body leading is one step looser than Tailwind's defaults. */
+@utility type-body {
+  @apply text-base/7 font-normal; /* 16/28 */
+}
+@utility type-body-medium {
+  @apply text-base/7 font-medium;
+}
+@utility type-body-sm {
+  @apply text-sm/6 font-normal; /* 14/24 */
+}
+@utility type-body-sm-medium {
+  @apply text-sm/6 font-medium;
+}
+@utility type-body-xs {
+  @apply text-xs/5 font-normal; /* 12/20 */
+}
+@utility type-body-xs-medium {
+  @apply text-xs/5 font-medium;
+}
+
+@utility type-link {
+  @apply text-base font-medium underline; /* 16/24 */
+}
+@utility type-link-sm {
+  @apply text-sm font-medium hover:underline; /* 14/20, underline on hover */
+}
+
+@utility type-field {
+  @apply text-base font-normal; /* 16/24 */
+}
+@utility type-field-sm {
+  @apply text-sm font-normal; /* 14/20 */
+}
+
+@utility type-button {
+  @apply text-base font-medium; /* 16/24 */
+}
+@utility type-button-sm {
+  @apply text-sm font-medium; /* 14/20 */
+}

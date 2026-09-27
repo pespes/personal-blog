@@ -24,7 +24,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         id="featured"
         class:list={[
           "pt-12 pb-6",
-          { "border-b border-border": recentPosts.length > 0 },
+          { "border-b border-separator": recentPosts.length > 0 },
         ]}
       >
         <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
