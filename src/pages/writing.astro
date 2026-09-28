@@ -16,9 +16,9 @@ const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 ---
 
-<Layout>
+<Layout title={`Writing | ${SITE.title}`}>
   <Header />
-  <main id="main-content" data-layout="index" class="app-layout">
+  <main id="main-content" data-layout="writing" class="app-layout">
     {featuredPosts.length > 0 && (
       <section
         id="featured"
@@ -63,7 +63,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     const indexLayout = (document.querySelector("#main-content") as HTMLElement)
       ?.dataset?.layout;
     if (indexLayout) {
-      sessionStorage.setItem("backUrl", "/");
+      sessionStorage.setItem("backUrl", "/writing");
     }
   });
 </script>

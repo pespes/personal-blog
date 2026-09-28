@@ -1,0 +1,45 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import ProtectedContent from "@/components/ProtectedContent.astro";
+import postFilter from "@/utils/postFilter";
+import { SITE } from "@/config";
+
+export async function getStaticPaths() {
+  const studies = await getCollection("work", postFilter);
+  return studies.map(study => ({
+    params: { slug: study.id },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+const { Content } = await render(study);
+const { title, description, protected: isProtected } = study.data;
+---
+
+<Layout
+  title={`${title} | ${SITE.title}`}
+  description={description}
+  noindex={isProtected}
+>
+  <Header />
+  <main id="main-content" class="app-layout pb-12">
+    <h1 class="mt-8 type-h1">{title}</h1>
+    <p class="mt-2 mb-8 type-body text-muted">{description}</p>
+    {isProtected ? (
+      <ProtectedContent>
+        <article class="app-prose max-w-app">
+          <Content />
+        </article>
+      </ProtectedContent>
+    ) : (
+      <article class="app-prose max-w-app">
+        <Content />
+      </article>
+    )}
+  </main>
+  <Footer />
+</Layout>

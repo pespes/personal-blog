@@ -9,6 +9,8 @@
 @theme inline {
   --font-app: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
+  /* Header content width: 1120px (Figma "Header - LG"), padding included. */
+  --container-header: 70rem;
 }
 
 @layer base {
@@ -18,7 +20,7 @@
     scrollbar-color: var(--surface-tertiary) transparent;
   }
   html {
-    @apply overflow-y-scroll scroll-smooth;
+    @apply scroll-smooth;
   }
   body {
     @apply flex min-h-svh flex-col bg-background font-app text-foreground selection:bg-accent/75 selection:text-background;
@@ -39,10 +41,6 @@
 
 @utility app-layout {
   @apply mx-auto w-full max-w-app px-4;
-}
-
-.active-nav {
-  @apply underline;
 }
 
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */

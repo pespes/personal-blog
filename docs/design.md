@@ -52,7 +52,7 @@ Figma group paths are flattened to HeroUI's CSS names (`accent/accent` → `--ac
 
 The full HeroUI set is kept even where nothing consumes it yet (fields, segment, charts, status colors): unused variables cost nothing and keep parity with HeroUI.
 
-**Accent is for fills, not text.** `--accent` (`#0485f7`, same in both modes) is only 3.38:1 on the light background, so it is used for fills (the Menu CTA, selection, the reading-progress bar, the back-to-top ring), non-text graphics (active header-icon strokes, blockquote rule — 3:1 is the bar there) and the large 404 display text. Links follow HeroUI: `text-link` (= foreground) + underline. If a colored text link is ever needed, use `text-accent-soft-foreground` (5.59:1 light / 8.21:1 dark).
+**Accent is for fills, not text.** `--accent` (`#0485f7`, same in both modes) is only 3.38:1 on the light background, so it is used for fills (the header's "Send an email" button, selection, the reading-progress bar, the back-to-top ring), non-text graphics (the blockquote rule — 3:1 is the bar there) and the large 404 display text. Links follow HeroUI: `text-link` (= foreground) + underline. If a colored text link is ever needed, use `text-accent-soft-foreground` (5.59:1 light / 8.21:1 dark).
 
 **Known contrast shortfalls, accepted for now:** white label on an accent button (`accent-foreground` on `accent`) is 3.59:1 (AA only for large/bold text); `muted` on `background` in light mode is 4.43:1.
 
@@ -66,7 +66,7 @@ To add a token: add the variable to **both** theme blocks, map it in `@theme inl
 
 ### Shadows
 
-From HeroUI's Figma effect styles, as `shadow-*` utilities: `shadow-surface` (cards), `shadow-field` (inputs), `shadow-overlay` (floating panels — used by the `Menu` pill), `shadow-switch`, `shadow-tab`, and `inset-shadow-inner`. Their colors are tokens, so in dark mode the drop shadows go transparent and only the 1px inner highlight remains.
+From HeroUI's Figma effect styles, as `shadow-*` utilities: `shadow-surface` (cards), `shadow-field` (inputs), `shadow-overlay` (floating panels — used by the header's mobile dropdown), `shadow-switch`, `shadow-tab`, and `inset-shadow-inner`. Their colors are tokens, so in dark mode the drop shadows go transparent and only the 1px inner highlight remains.
 
 ### Light / dark mode
 
@@ -104,17 +104,24 @@ Both fonts are registered in `astro.config.ts` (`fonts: [...]`) **and** need a `
 
 ### Layout & interaction conventions
 
-- **Content width:** `max-w-app` (= `max-w-3xl`) and `app-layout` (centred, `px-4`) utilities in `global.css`. Use these, not ad-hoc max-widths.
+- **Content width:** `max-w-app` (= `max-w-3xl`) and `app-layout` (centred, `px-4`) utilities in `global.css`. The header uses the wider `max-w-header` (`--container-header: 70rem`, 1120px). Use these, not ad-hoc max-widths.
+- **No forced scrollbar.** `<html>` does not set `overflow-y: scroll` (AstroPaper did, to avoid a sideways shift between short and long pages). With classic, non-overlay scrollbars it reserved an empty gutter on short pages, which cut the full-width header/footer borders short. The trade-off: centred content may shift a few pixels between pages that scroll and pages that don't.
 - **Focus:** HeroUI's ring — **a 2px solid `focus` (accent) ring after a 2px `background`-colored gap, on `:focus-visible`** — as the **`focus-ring` utility** (`heroui-theme.css`). It is built on Tailwind's `ring-*` utilities, so it stacks with an element's own `shadow-*` instead of replacing it. Every `a` and `button` gets it from the base layer in `global.css`; `summary` and `pre` in `.app-prose` apply it too, and the header's icon controls and `BackButton` restate it. Add `focus-ring` to any other focusable element (e.g. a `[tabindex]` or `role="button"` element). Inputs use **`focus-ring-field`** (2px ring, no gap). Pagefind renders its own markup, so `search.astro` restates both rings in plain CSS. Never remove focus indicators.
-- **Borders are solid.** Section dividers (header, footer, home-page section break, post `hr`s) use `border-separator`; component outlines use `border-border`. Tag links have a solid 2px `foreground` underline. No dashed borders or underlines.
-- **Active nav item:** `.active-nav` (underline); icon buttons also switch their SVG stroke to accent (`[&>svg]:stroke-accent`).
+- **Borders are solid.** The page chrome — the header's bottom border and the footer's top border — uses `border-border` and runs full width. In-content dividers (home-page section break, post `hr`s) use `border-separator`; component outlines use `border-border`. Tag links have a solid 2px `foreground` underline. No dashed borders or underlines.
+- **Active nav item:** marked with `aria-current="page"` only; there is no visible active state (matching Figma). Nav links underline on hover.
 - **Links:** `text-link` + underline (`underline-offset-4`); UI links (nav, `LinkButton`, `EditPost`, back-to-top) underline on hover instead of changing color.
 - **Selection:** `bg-accent/75` with `text-background`.
-- **Header:** the `Menu.astro` pill is the primary nav on `sm+` (translucent `bg-background/90` + `backdrop-blur`, `border-border`, `shadow-overlay`, accent CTA pill with `text-accent-foreground` / `hover:bg-accent-hover`). On mobile it's a hamburger + dropdown `#menu-items`. Search / archives / theme toggle are an always-visible cluster outside the menu. Current items: Home, Posts, About + "Email me" CTA.
+- **Header** (`Header.astro`, from the "Header design" section, node `8:778`, in the Personal blog Figma file): full-width (the bottom `border-border` runs edge to edge), with its content centred in `max-w-header` (70rem = 1120px, from Figma, padding included) and `px-6`; `py-8` on `lg+` / `py-6` below. Site title is `type-h4`.
+  - **`lg+`:** title · centred text nav (`type-h6`, `gap-8`, underline on hover) · "Send an email" as HeroUI's **md** primary button (`h-9`, `rounded-3xl`, `bg-accent` → `hover:bg-accent-hover`, `text-accent-foreground`, `type-button-sm`) — the same button as in the dropdown.
+  - **Below `lg`:** title · a 40px round hamburger (`#menu-btn`, `default-hover` background on hover and while open) that toggles `#menu-items`, a HeroUI Dropdown: `w-60`, `p-2`, `rounded-3xl`, `bg-overlay`, `shadow-overlay`, 36px items (`type-body-sm-medium`, `rounded-2_5xl`, `bg-default` on hover/focus) and the full-width CTA as HeroUI's **md** primary button (`h-9`, `type-button-sm`). It closes on Escape (focus returns to the button) or an outside click, and re-initialises after view transitions.
+  - Items come from one `navItems` list shared by both: **Work** (`/`), **Writing** (`/writing`, also active on `/posts/…`), **About** (`/about`).
+  - The theme toggle (`#theme-btn`, a 40px round icon button) sits in the right-hand cluster at every width; its final placement is an open decision. There must be exactly one `#theme-btn` — `src/scripts/theme.ts` finds it with `querySelector`.
+  - Archives and search are not in the header; their pages (`/archives`, `/search`) still exist but are unlinked.
+- **Footer** (`Footer.astro`) mirrors the header: full-width with a top `border-border` running edge to edge, content centred in `max-w-header` with `px-6 py-6`. Copyright is `type-body-sm text-muted`; the `Socials` icons are `text-muted` → `hover:text-foreground` (with a small hover tilt). Stacked and centred below `sm`, a single row on `sm+`.
 
 ### Icons
 
-- **UI icons come from Lucide** (`@lucide/astro`), imported by their suffixed names — `import { SearchIcon } from "@lucide/astro"` — which avoids clashes with local components such as `Menu.astro`.
+- **UI icons come from Lucide** (`@lucide/astro`), imported by their suffixed names — `import { SearchIcon } from "@lucide/astro"` — which avoids clashes with local component names.
 - Size and color them with Tailwind (`size-*`, `stroke-*`); they default to `stroke="currentColor"`, so they inherit text color and follow the theme.
 - **Brand logos are the exception.** Lucide ships none, so GitHub / LinkedIn / X / WhatsApp / Facebook / Telegram / Pinterest are Tabler SVGs in `src/assets/icons/`, referenced from `SOCIALS` / `SHARE_LINKS` in `src/constants.ts`. Don't add non-brand SVGs there — use a Lucide icon.
 
@@ -130,11 +137,14 @@ All UI lives in `src/components/` (15 `.astro` components) and `src/layouts/` (`
 
 | Group | Components |
 | --- | --- |
-| Navigation | `Header` (uses `Menu`), `Menu`, `Breadcrumb`, `Pagination`, `BackButton`, `BackToTopButton` |
+| Navigation | `Header`, `Breadcrumb`, `Pagination`, `BackButton`, `BackToTopButton` |
 | Content | `Card`, `Datetime`, `Tag`, `EditPost`, `Video` |
 | Social | `Socials` (in `Footer`), `ShareLinks` (end of a post) |
 | Primitives | `LinkButton` — the base link atom that the composite links wrap |
+| Work | `ProtectedContent` — password gate for protected case studies (HeroUI surface card, field, md primary button; error text `danger-soft-foreground`) |
 | Chrome | `Footer` |
+
+The HeroUI **md primary button** classes live in `src/utils/buttonClasses.ts` (`primaryButtonClass`, no display value) and are shared by the header CTA and the case-study unlock button — reuse it rather than re-typing the class list.
 
 Most components accept a `class` prop and merge it with `class:list` — follow that pattern for new ones. Keep styling in Tailwind utilities inside the component; global CSS is only for tokens, base element styles, and `.app-prose`.
 
@@ -157,6 +167,7 @@ Most components accept a `class` prop and merge it with `class:list` — follow 
 
 ## Open decisions
 
+- **Theme toggle placement.** The new header design (Personal blog Figma, node `8:778`) has no theme toggle. It stays in the header for now until a home is chosen.
 - **OG images and theme tokens.** The OG templates carry their own hardcoded palette. Decide whether they should match the site tokens before turning `dynamicOgImage` on.
 
 ---
@@ -182,3 +193,12 @@ Update `design.md` in the **same change** whenever you make or change a design-a
 - 2026-09-26: **Started the HeroUI v3 overhaul.** Extracted the `02_Theme (HeroUI)` variables (83, Light/Dark), the 19 semantic text styles and the 10 HeroUI effect styles from the HeroUI Figma Kit V3 (`Rtri93bnzqBZuWUHkgp7XI`), skipping the stock-Tailwind base layer. Adapted them into the staged `src/styles/heroui-theme.css` (`html[data-theme]` blocks, `@theme inline` mappings, `type-*` and `focus-ring` utilities). It is not imported yet; see `docs/heroui-tokens.md`.
 - 2026-09-26: **Adopted the HeroUI v3 theme layer.** `heroui-theme.css` is now imported by `global.css` and replaces the five AstroPaper-era tokens (`--background` `#fdfdfd`/`#1c1917`, `--foreground`, `--accent` `#006cac`/`#5db1e8`, `--muted` fill, `--border`). Decisions: old `--muted` fills → `surface-tertiary` (closest match in both modes); accent no longer used as text — links are `text-link` + underline, UI links underline on hover, prev/next titles are `text-muted`, post titles are `type-h2 sm:type-h1` in `foreground`; HeroUI's cool-grey canvas and solid `focus-ring` replace the warm canvas and the dashed `focus-outline` utility (removed); `.app-prose` headings use `type-h1…h6` (h3 is no longer italic); the full HeroUI token set is kept; the `Menu` pill uses `shadow-overlay` (removing its hardcoded-shadow exception) and `accent-foreground` / `accent-hover`. Button-label (3.59:1) and light `muted` text (4.43:1) contrast accepted for now. Folded `docs/heroui-tokens.md` into this file.
 - 2026-09-26: Moved the last hardcoded UI colors onto HeroUI tokens: Shiki diff add/remove → `success-soft`/`danger-soft` (+ `-soft-foreground` glyphs), highlighted lines → `default`, filename-tab dot → `success`. Replaced all dashed borders/underlines with solid ones: tag underlines (still `foreground`), the 404 home link, and section dividers — which now use `border-separator` (post `hr`s, prose `hr`, header, footer, home-page section break). Removed the Shiki-tint exception from the guardrails.
+- 2026-09-27: **New information architecture** (from the "Header design" section, node `8:778`, in the Personal blog Figma file). `/` is now **Work**, a blank landing page (`src/pages/index.astro`); the former home page (featured + recent posts) moved to **Writing** at `/writing` (`src/pages/writing.astro`); About is unchanged. Post, tag and archive URLs are unchanged. The nav is one `navItems` list shared by the desktop pill and the mobile menu; Writing stays active on `/posts/…`. The post "Go back" fallback now points to `/writing`. The CTA is relabelled "Send an email". The header's visual redesign itself is not implemented yet.
+- 2026-09-27: Removed the **archives and search** icon buttons from the header (pages still exist, unlinked from the nav; `SITE.showArchives` now only gates the archives page). The theme toggle stays in the header pending a placement decision (added to Open decisions).
+- 2026-09-27: **Rebuilt `Header.astro` from the Figma "Header design"** (Personal blog, node `8:778`). Replaced the `Menu.astro` pill (deleted) with a full-width header: text nav + HeroUI primary CTA on `lg+`, hamburger + HeroUI Dropdown below `lg`. The dropdown now closes on Escape / outside click. Added `--radius-2_5xl` (20px, HeroUI's base-scale extra) for dropdown items. Removed the unused `.active-nav` class; active items are marked with `aria-current`.
+- 2026-09-28: Header content is now capped at **`max-w-header`** (`--container-header: 70rem` = 1120px, from the Figma frame) and centred, while the header itself and its bottom border stay full-width. The mobile dropdown's CTA uses HeroUI's **md** button size.
+- 2026-09-28: **Footer matches the header.** Full-width with a top `border-border` (was a `border-separator` line inside the content column), content in `max-w-header` + `px-6`. Mapped its remaining styling to tokens: copyright `type-body-sm text-muted` (was full-size body text), social icons `text-muted` → `hover:text-foreground` (was `opacity-90`).
+- 2026-09-28: Removed `overflow-y-scroll` from `<html>`. The always-on scrollbar gutter left an empty strip at the right of short pages (e.g. Work) with classic scrollbars, so the full-width header and footer borders stopped short of the window edge.
+- 2026-09-28: Removed the permanent underline on the current page's desktop nav link; the current page is marked by `aria-current` only, and links underline on hover.
+- 2026-09-28: The desktop header's "Send an email" button is now HeroUI's **md** size (was lg), matching the dropdown and the updated Figma. Both uses share one `ctaClass`.
+- 2026-09-28: Added **case studies** (`work` collection / Keystatic "Case Studies", `/work/<slug>`) with an optional build-time-encrypted **password gate** (`ProtectedContent.astro`, `protectCaseStudies` integration, `WORK_PASSWORD`). Extracted the md primary button classes to `src/utils/buttonClasses.ts`. Layout gained a `noindex` prop (used by protected case studies). Work is now the active nav section on `/work/…` pages.

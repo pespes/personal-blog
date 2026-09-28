@@ -60,6 +60,12 @@ featured: false
 
 The Keystatic CMS UI is available at `/keystatic` in dev mode (`pnpm dev`).
 
+### Case studies (Work)
+
+Case studies are a second collection, **`work`** (`src/data/work/`, "Case Studies" in Keystatic), with the same frontmatter as blog posts plus **`protected: true | false`**. They render at `/work/<slug>` (`src/pages/work/[slug].astro`) and never appear in Writing, RSS or tags. The Work landing page (`/`) doesn't list them yet.
+
+**Password protection** (`protected: true`): `ProtectedContent.astro` wraps the body between marker elements; after the build, `src/integrations/protectCaseStudies.ts` replaces it with AES-256-GCM ciphertext (PBKDF2 key from **`WORK_PASSWORD`**), and the browser decrypts it when the visitor enters the password (remembered for the tab session). One shared password for all protected case studies. Title and description stay public; protected pages get `noindex`. It runs before Pagefind, so protected text is never indexed. This is deterrence, not access control: anyone with the password can share it, and images in a protected case study are still ordinary public files.
+
 ## Deployment
 
 Cloudflare Pages as a fully static site (no SSR adapter). Push to `main` → auto-deploy.
@@ -97,6 +103,7 @@ import Video from '@/components/Video.astro';
 - **Dynamic OG images are a feature flag (`dynamicOgImage`)** — currently **disabled** in `config.ts`. When enabled, posts without an explicit `ogImage` get an OG image auto-generated at build time via Satori (adds ~1s per post).
 - **Nested blog directories** — subdirectories prefixed with `_` (e.g., `_releases/`) are excluded from URL slugs. Other nested dirs are included.
 - **Changing a Shiki transformer (`src/utils/transformers/`) needs a content-cache clear** — Astro caches rendered Markdown, so old classes survive a rebuild (and render unstyled once Tailwind stops generating them). Run `rm -f .astro/data-store.json && rm -rf node_modules/.astro` before building.
+- **Protected case studies are not encrypted in `pnpm dev`** — the integration only runs on `astro build`, so dev shows the content unlocked. Test the password flow with `pnpm build && pnpm preview`.
 - **Scheduled posts** — posts with `pubDatetime` up to 15 minutes in the future will still be published (controlled by `scheduledPostMargin` in `config.ts`).
 
 ### Astro 7 migration notes
@@ -141,6 +148,7 @@ If the user names a server themselves, that counts as approval to use it.
 
 ```bash
 PUBLIC_GOOGLE_SITE_VERIFICATION=  # Optional — Google Search Console
+WORK_PASSWORD=                    # Required if any case study is protected — build fails without it
 ```
 
 Copy `.env.example` to `.env` (or set directly in Cloudflare Pages dashboard).

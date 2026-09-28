@@ -308,6 +308,8 @@ html[data-theme="dark"] {
   --color-chart-5: var(--chart-5);
 
   --radius-field: var(--field-radius);
+  /* HeroUI base-scale extra (Figma `rounded-2_5xl`); used by dropdown items. */
+  --radius-2_5xl: 1.25rem;
 
   /* Effect styles → shadow-* utilities */
   --shadow-surface:
