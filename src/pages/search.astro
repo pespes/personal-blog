@@ -35,9 +35,9 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       // Display warning inn dev mode
       if (import.meta.env.DEV) {
         pageFindSearch.innerHTML = `
-            <div class="bg-surface-tertiary/75 rounded p-4 space-y-4 mb-4">
+            <div class="bg-surface-tertiary rounded-3xl p-4 space-y-4 mb-4 type-body-sm">
               <p><strong>DEV mode Warning! </strong>You need to build the project at least once to see the search results during development.</p>
-              <code class="block bg-black text-white px-2 py-1 rounded">pnpm run build</code>
+              <code class="block bg-background-inverse text-background px-2 py-1 rounded">pnpm run build</code>
             </div>
           `;
       }
@@ -96,8 +96,8 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     --pagefind-ui-background: var(--background);
     --pagefind-ui-border: var(--border);
     --pagefind-ui-primary: var(--link);
-    --pagefind-ui-tag: var(--background);
-    --pagefind-ui-border-radius: 0.375rem;
+    --pagefind-ui-tag: var(--default);
+    --pagefind-ui-border-radius: var(--field-radius);
     --pagefind-ui-border-width: 1px;
     --pagefind-ui-image-border-radius: 8px;
     --pagefind-ui-image-box-ratio: 3 / 2;
@@ -106,9 +106,15 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       background-color: var(--foreground);
     }
 
+    /* HeroUI primary field (the search box sits on the page background). */
     input {
       font-weight: 400;
-      border: 1px solid var(--border);
+      background-color: var(--field-background);
+      border: var(--field-border-width) solid var(--field-border);
+      box-shadow:
+        0 0 1px 0 var(--field-shadow-2),
+        0 1px 2px 0 var(--field-shadow-2),
+        0 2px 4px 0 var(--field-shadow);
     }
 
     /* Pagefind renders its own markup, so the HeroUI focus rings
@@ -129,6 +135,13 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       box-shadow:
         0 0 0 var(--ring-offset-width) var(--background),
         0 0 0 var(--ring-focus-width) var(--focus);
+    }
+
+    /* Search-term highlight: HeroUI warning "soft" pair (closest to a yellow
+       highlighter), readable in both themes. */
+    mark {
+      background-color: var(--warning-soft);
+      color: var(--warning-soft-foreground);
     }
 
     .pagefind-ui__result:last-of-type {

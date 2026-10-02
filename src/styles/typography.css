@@ -66,7 +66,7 @@
     }
 
     figcaption {
-      @apply opacity-75;
+      @apply text-muted;
     }
 
     table {
@@ -80,7 +80,7 @@
       }
 
       code {
-        @apply break-all sm:break-normal;
+        @apply break-all lg:break-normal;
       }
     }
 
@@ -93,7 +93,7 @@
     }
 
     blockquote {
-      @apply border-s-accent/80 wrap-break-word opacity-80;
+      @apply border-s-accent wrap-break-word text-muted [&_p]:text-muted [&_strong]:text-muted;
     }
 
     details {

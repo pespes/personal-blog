@@ -18,13 +18,13 @@ const { tag, tagName, size = "lg" } = Astro.props;
       "border-b-2 border-foreground",
       "hover:-mt-0.5",
       "focus-visible:border-none",
-      { "text-sm": size === "sm" },
-      { "text-lg": size === "lg" },
+      { "type-body-sm": size === "sm" },
+      { "type-body": size === "lg" },
     ]}
   >
     <HashIcon
       class:list={[
-        "opacity-80",
+        "text-muted",
         { "size-5": size === "lg" },
         { "size-4": size === "sm" },
       ]}

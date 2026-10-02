@@ -66,11 +66,20 @@ const structuredData = {
     <meta name="generator" content={Astro.generator} />
 
     <!-- Load Fonts -->
+    {/*
+      Preload by subset + style only, not weight: Inter is a variable font (one
+      file covers every weight), and Astro tags that file with the first face's
+      weight, so a `weight: 400` filter never matches it.
+    */}
     <Font
       cssVariable="--font-inter"
-      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
+      preload={[{ subset: "latin", style: "normal" }]}
     />
     <Font cssVariable="--font-jetbrains-mono" />
+    <Font
+      cssVariable="--font-geist-pixel"
+      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
+    />
 
     <!-- General Meta Tags -->
     <title>{title}</title>

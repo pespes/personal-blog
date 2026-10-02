@@ -27,7 +27,7 @@ const { title, description, protected: isProtected } = study.data;
 >
   <Header />
   <main id="main-content" class="app-layout pb-12">
-    <h1 class="mt-8 type-h1">{title}</h1>
+    <h1 class="mt-8 type-h2 lg:type-h1">{title}</h1>
     <p class="mt-2 mb-8 type-body text-muted">{description}</p>
     {isProtected ? (
       <ProtectedContent>

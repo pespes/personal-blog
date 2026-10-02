@@ -21,14 +21,14 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
 >
   <div
     class:list={[
-      "mx-auto max-w-header px-6 py-6",
-      "flex flex-col items-center justify-between sm:flex-row-reverse",
+      "container-content py-6",
+      "flex flex-col items-center justify-between lg:flex-row-reverse",
     ]}
   >
     <Socials />
-    <div class="my-2 flex flex-col items-center type-body-sm whitespace-nowrap text-muted sm:flex-row">
+    <div class="my-2 flex flex-col items-center type-body-sm whitespace-nowrap text-muted lg:flex-row">
       <span>Copyright &#169; {currentYear}</span>
-      <span class="hidden sm:inline">&nbsp;|&nbsp;</span>
+      <span class="hidden lg:inline">&nbsp;|&nbsp;</span>
       <span>All rights reserved.</span>
     </div>
   </div>

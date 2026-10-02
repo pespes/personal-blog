@@ -1,53 +1,100 @@
 ---
 // Password gate for a case study. At build time the slot's HTML (between the
 // markers) is replaced with ciphertext by src/integrations/protectCaseStudies.ts;
-// the script below decrypts it in the browser. In `pnpm dev` nothing is
-// encrypted, so the content is shown straight away.
-import { LockIcon } from "@lucide/astro";
+// the script below asks for the password in a modal (HeroUI Modal size=xs,
+// Personal blog Figma node 16:3839) and decrypts it in the browser. In
+// `pnpm dev` nothing is encrypted, so the content is shown straight away.
+import { LockIcon, XIcon } from "@lucide/astro";
 import { primaryButtonClass } from "@/utils/buttonClasses";
 import { PROTECTED_END, PROTECTED_START } from "@/utils/protectedContent";
 ---
 
 <div data-protected>
-  <form
-    data-protected-form
-    data-pagefind-ignore
-    class="flex flex-col gap-4 rounded-3xl bg-surface p-6 text-surface-foreground shadow-surface"
+  <dialog
+    data-protected-dialog
+    aria-labelledby="protected-title"
+    aria-describedby="protected-description"
+    class="m-auto w-80 max-w-[calc(100%-2rem)] rounded-3xl bg-overlay p-6 text-overlay-foreground shadow-overlay backdrop:bg-backdrop"
   >
-    <div class="flex items-center gap-2">
-      <LockIcon class="size-5" aria-hidden="true" />
-      <h2 class="type-h5">This case study is password protected</h2>
-    </div>
-    <p class="type-body-sm text-muted">
-      Enter the password you were given to read it.
-    </p>
-    <div class="flex flex-col gap-1.5">
-      <label for="protected-password" class="type-body-sm-medium">
-        Password
-      </label>
-      <div class="flex flex-col gap-2 sm:flex-row">
-        <input
-          id="protected-password"
-          type="password"
-          required
-          autocomplete="current-password"
-          aria-describedby="protected-error"
-          class="h-9 w-full rounded-field bg-field px-3 type-field-sm text-field-foreground shadow-field focus-ring-field placeholder:text-field-placeholder hover:bg-field-hover focus:bg-field-focus"
-        />
-        <button type="submit" class:list={["inline-flex", primaryButtonClass]}>
-          Unlock
-        </button>
+    <form
+      data-protected-form
+      data-pagefind-ignore
+      novalidate
+      class="flex flex-col gap-5"
+    >
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 pe-6">
+          <span class="flex size-10 items-center justify-center rounded-3xl bg-default text-default-foreground">
+            <LockIcon class="size-4" aria-hidden="true" />
+          </span>
+          <h2 id="protected-title" class="type-body-medium text-foreground">
+            Enter password to view this case study
+          </h2>
+        </div>
+        <p id="protected-description" class="pe-4 type-body-sm text-muted">
+          If you received an application from me, the password will be in the
+          header of my resume
+        </p>
+        <div class="flex flex-col gap-1">
+          {/* HeroUI Input variant=secondary: the filled variant for fields on a surface/overlay. */}
+          <label for="protected-password" class="sr-only">
+            Password
+          </label>
+          <input
+            id="protected-password"
+            type="password"
+            autofocus
+            autocomplete="current-password"
+            placeholder="Enter password"
+            aria-describedby="protected-message"
+            class="h-9 w-full rounded-field border border-field-border bg-default px-3 type-field-sm text-field-foreground focus-ring-field placeholder:text-field-placeholder hover:bg-default-hover focus:bg-default aria-invalid:border-danger"
+          />
+          {/* Errors and hints. Always takes one line, so a message doesn't shift the layout. */}
+          <p
+            id="protected-message"
+            aria-live="polite"
+            class="min-h-5 type-body-xs data-[tone=error]:text-danger-soft-foreground data-[tone=hint]:text-muted"
+          ></p>
+        </div>
       </div>
-      <p
-        id="protected-error"
-        role="alert"
-        hidden
-        class="type-body-xs text-danger-soft-foreground"
+      <button
+        type="submit"
+        class:list={[
+          "flex w-full disabled:cursor-wait disabled:opacity-(--disabled-opacity)",
+          primaryButtonClass,
+        ]}
       >
-        That password didn't work. Try again.
-      </p>
-    </div>
-  </form>
+        Open project
+      </button>
+    </form>
+    <button
+      type="button"
+      data-protected-close
+      aria-label="Close"
+      class="absolute inset-e-2.5 top-4 flex size-6 items-center justify-center rounded-xl bg-default text-muted transition-colors hover:bg-default-hover"
+    >
+      <XIcon class="size-4" aria-hidden="true" />
+    </button>
+  </dialog>
+
+  {/* Shown if the visitor closes the modal without unlocking. */}
+  <div
+    data-protected-locked
+    data-pagefind-ignore
+    hidden
+    class="flex flex-col items-start gap-3 rounded-3xl bg-surface p-6 text-surface-foreground shadow-surface"
+  >
+    <p class="type-body-sm text-muted">
+      This case study is password protected.
+    </p>
+    <button
+      type="button"
+      data-protected-open
+      class:list={["inline-flex", primaryButtonClass]}
+    >
+      Enter password
+    </button>
+  </div>
 
   <div data-protected-body hidden>
     <Fragment set:html={PROTECTED_START} />
@@ -59,15 +106,38 @@ import { PROTECTED_END, PROTECTED_START } from "@/utils/protectedContent";
 <script>
   const STORAGE_KEY = "work-password";
 
+  // Kept short so they fit the one line reserved under the field (272px).
+  const MESSAGES = {
+    empty: "Enter the password to continue.",
+    wrong: "That password didn't work. Try again.",
+    changed: "The password has changed. Enter the new one.",
+    unsupported: "Your browser can't unlock this. Try another.",
+    damaged: "This page didn't load properly. Please refresh.",
+    capsLock: "Caps Lock is on.",
+  };
+
+  type Result = "ok" | "wrong" | "damaged";
+
   const fromBase64 = (b64: string) =>
     Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 
+  /** Splits `salt.iv.ciphertext`; null if the payload is malformed. */
+  function parsePayload(payload: string) {
+    const parts = payload.split(".");
+    if (parts.length !== 3) return null;
+    try {
+      const [salt, iv, data] = parts.map(fromBase64);
+      return { salt, iv, data };
+    } catch {
+      return null;
+    }
+  }
+
   async function decrypt(
-    payload: string,
+    { salt, iv, data }: NonNullable<ReturnType<typeof parsePayload>>,
     iterations: number,
     password: string
   ) {
-    const [salt, iv, data] = payload.split(".").map(fromBase64);
     const baseKey = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(password),
@@ -112,47 +182,125 @@ import { PROTECTED_END, PROTECTED_START } from "@/utils/protectedContent";
     const root = document.querySelector<HTMLElement>("[data-protected]");
     if (!root) return;
 
+    const dialog = root.querySelector<HTMLDialogElement>(
+      "[data-protected-dialog]"
+    )!;
     const form = root.querySelector<HTMLFormElement>("[data-protected-form]")!;
+    const input = form.querySelector<HTMLInputElement>("input")!;
+    const submit = form.querySelector<HTMLButtonElement>("[type=submit]")!;
+    const message = form.querySelector<HTMLElement>("#protected-message")!;
+    const locked = root.querySelector<HTMLElement>("[data-protected-locked]")!;
     const body = root.querySelector<HTMLElement>("[data-protected-body]")!;
     const cipher = body.querySelector<HTMLElement>("[data-protected-cipher]");
-    const input = form.querySelector<HTMLInputElement>("input")!;
-    const error = form.querySelector<HTMLElement>("#protected-error")!;
 
+    let unlocked = false;
     const reveal = () => {
-      form.hidden = true;
+      unlocked = true;
+      locked.hidden = true;
       body.hidden = false;
+      if (dialog.open) dialog.close();
     };
 
     // Dev server: the build step hasn't run, so the content is plain HTML.
     if (!cipher) return reveal();
 
-    const payload = cipher.dataset.protectedCipher!;
+    const payload = parsePayload(cipher.dataset.protectedCipher ?? "");
     const iterations = Number(cipher.dataset.iterations);
+    // Web Crypto needs a secure context (https or localhost) and a modern browser.
+    const supported = Boolean(window.isSecureContext && crypto?.subtle);
 
-    const unlock = async (password: string) => {
-      try {
-        body.innerHTML = await decrypt(payload, iterations, password);
-        storage.set(password);
-        reveal();
-        return true;
-      } catch {
-        return false;
-      }
+    /** Shows an error (marks the field invalid if `invalid`) or a hint; no args clears it. */
+    const show = (
+      text = "",
+      tone: "error" | "hint" = "error",
+      invalid = false
+    ) => {
+      message.textContent = text;
+      message.dataset.tone = tone;
+      if (invalid) input.setAttribute("aria-invalid", "true");
+      else input.removeAttribute("aria-invalid");
     };
 
-    const saved = storage.get();
-    if (saved) {
-      unlock(saved).then(ok => {
-        if (!ok) storage.set(null); // password changed since it was saved
-      });
-    }
+    const tryPassword = async (password: string): Promise<Result> => {
+      if (!payload) return "damaged";
+      try {
+        body.innerHTML = await decrypt(payload, iterations, password);
+      } catch {
+        return "wrong";
+      }
+      storage.set(password);
+      reveal();
+      return "ok";
+    };
+
+    const openModal = (text?: string) => {
+      locked.hidden = true;
+      if (!supported) show(MESSAGES.unsupported);
+      else if (!payload) show(MESSAGES.damaged);
+      else if (text) show(text, "error", true);
+      else show();
+      dialog.showModal();
+    };
+
+    const setBusy = (busy: boolean) => {
+      submit.disabled = busy;
+      submit.textContent = busy ? "Checking…" : "Open project";
+      form.setAttribute("aria-busy", String(busy));
+    };
 
     form.addEventListener("submit", async event => {
       event.preventDefault();
-      if (await unlock(input.value)) return;
-      error.hidden = false;
-      input.setAttribute("aria-invalid", "true");
+      if (submit.disabled) return;
+      if (!supported) return show(MESSAGES.unsupported);
+
+      const value = input.value;
+      if (!value.trim()) {
+        show(MESSAGES.empty, "error", true);
+        return input.focus();
+      }
+
+      setBusy(true);
+      let result = await tryPassword(value);
+      // Copying from a PDF résumé often brings stray spaces along.
+      if (result === "wrong" && value.trim() !== value) {
+        result = await tryPassword(value.trim());
+      }
+      setBusy(false);
+
+      if (result === "ok") return;
+      if (result === "damaged") return show(MESSAGES.damaged);
+      show(MESSAGES.wrong, "error", true);
       input.select();
+    });
+
+    // Typing clears an error; Caps Lock gets a hint while there's no error.
+    input.addEventListener("input", () => {
+      if (input.hasAttribute("aria-invalid")) show();
+    });
+    input.addEventListener("keyup", event => {
+      if (input.hasAttribute("aria-invalid") || !supported || !payload) return;
+      show(event.getModifierState("CapsLock") ? MESSAGES.capsLock : "", "hint");
+    });
+
+    root
+      .querySelector("[data-protected-close]")!
+      .addEventListener("click", () => dialog.close());
+    root
+      .querySelector("[data-protected-open]")!
+      .addEventListener("click", () => openModal());
+
+    // Closed without unlocking (close button or Escape): leave a way back in.
+    dialog.addEventListener("close", () => {
+      if (!unlocked) locked.hidden = false;
+    });
+
+    // Reuse a password entered earlier this session; otherwise ask for it.
+    const saved = supported && payload ? storage.get() : null;
+    if (!saved) return openModal();
+    tryPassword(saved).then(result => {
+      if (result === "ok") return;
+      storage.set(null);
+      openModal(MESSAGES.changed);
     });
   }
 

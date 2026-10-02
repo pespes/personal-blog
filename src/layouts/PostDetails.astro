@@ -89,19 +89,19 @@ const nextPost =
     class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
     data-pagefind-body
   >
-    <h1 class="inline-block type-h2 text-foreground sm:type-h1">{title}</h1>
+    <h1 class="inline-block type-h2 text-foreground lg:type-h1">{title}</h1>
     <div class="my-2 flex items-center gap-2">
       <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
       <span
         aria-hidden="true"
         class:list={[
-          "max-sm:hidden",
+          "max-lg:hidden",
           { hidden: !SITE.editPost.enabled || hideEditPost },
         ]}
       >
         |
       </span>
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+      <EditPost {hideEditPost} {post} class="max-lg:hidden" />
     </div>
     <article
       id="article"
@@ -112,9 +112,9 @@ const nextPost =
 
     <hr class="my-8 border-separator" />
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
+    <EditPost class="lg:hidden" {hideEditPost} {post} />
 
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
+    <ul class="mt-4 mb-8 flex flex-wrap gap-4 lg:my-8">
       {tags.map(tag => (
         <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
       ))}
@@ -127,27 +127,31 @@ const nextPost =
     <hr class="my-6 border-separator" />
 
     <!-- Previous/Next Post Buttons -->
-    <div data-pagefind-ignore class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div data-pagefind-ignore class="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {prevPost && (
         <a
           href={getPath(prevPost.id, prevPost.filePath)}
-          class="flex w-full gap-1 hover:opacity-75"
+          class="group flex w-full gap-1"
         >
           <ChevronLeftIcon class="inline-block flex-none rtl:rotate-180" />
           <div>
-            <span>Previous Post</span>
-            <div class="text-sm text-muted">{prevPost.title}</div>
+            <span class="underline-offset-4 group-hover:underline">
+              Previous Post
+            </span>
+            <div class="type-body-sm text-muted">{prevPost.title}</div>
           </div>
         </a>
       )}
       {nextPost && (
         <a
           href={getPath(nextPost.id, nextPost.filePath)}
-          class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
+          class="group flex w-full justify-end gap-1 text-end lg:col-start-2"
         >
           <div>
-            <span>Next Post</span>
-            <div class="text-sm text-muted">{nextPost.title}</div>
+            <span class="underline-offset-4 group-hover:underline">
+              Next Post
+            </span>
+            <div class="type-body-sm text-muted">{nextPost.title}</div>
           </div>
           <ChevronRightIcon class="inline-block flex-none rtl:rotate-180" />
         </a>
@@ -209,7 +213,7 @@ const nextPost =
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
-        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
+        "heading-link ms-2 text-muted no-underline lg:opacity-0 lg:group-hover:opacity-100 lg:focus:opacity-100";
       link.href = "#" + heading.id;
 
       const span = document.createElement("span");
@@ -242,7 +246,7 @@ const nextPost =
         : "-top-3";
 
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-surface-tertiary border border-surface-tertiary px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-surface-tertiary border border-surface-tertiary px-2 py-0.5 type-body-xs-medium text-foreground`;
       copyButton.innerHTML = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);

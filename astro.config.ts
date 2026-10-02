@@ -76,7 +76,9 @@ export default defineConfig({
       cssVariable: "--font-inter",
       provider: fontProviders.google(),
       fallbacks: ["sans-serif"],
-      weights: [300, 400, 500, 600, 700],
+      // HeroUI's scale uses regular–bold only. Inter is a variable font, so this
+      // is one file per style (italic is for Markdown emphasis).
+      weights: [400, 500, 600, 700],
       styles: ["normal", "italic"],
     },
     {
@@ -86,6 +88,16 @@ export default defineConfig({
       fallbacks: ["monospace"],
       weights: [400, 700],
       styles: ["normal", "italic"],
+    },
+    {
+      // Display face: pixel type for expressive moments (type-display-* styles).
+      // Google serves one weight (400) only.
+      name: "Geist Pixel",
+      cssVariable: "--font-geist-pixel",
+      provider: fontProviders.google(),
+      fallbacks: ["monospace"],
+      weights: [400],
+      styles: ["normal"],
     },
   ],
 });
