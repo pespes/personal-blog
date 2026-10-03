@@ -114,12 +114,12 @@ All three fonts are registered in `astro.config.ts` (`fonts: [...]`) **and** nee
 - **Links:** `text-link` + underline (`underline-offset-4`); UI links (nav, `LinkButton`, `EditPost`, back-to-top) underline on hover instead of changing color.
 - **Selection:** `bg-accent/75` with `text-background`.
 - **Header** (`Header.astro`, from the "Header design" section, node `8:778`, in the Personal blog Figma file): full-width (the bottom `border-border` runs edge to edge), with its content in `container-content` (up to 1120px of content, `--gutter` padding outside it); `py-8` on `lg+` / `py-6` below. Site title is `type-h4`.
-  - **`lg+`:** title · centred text nav (`type-display-h6` — Geist Pixel, `gap-8`, underline on hover) · "Send an email" as HeroUI's **md** primary button (`h-9`, `rounded-3xl`, `bg-accent` → `hover:bg-accent-hover`, `text-accent-foreground`, `type-button-sm`) — the same button as in the dropdown.
-  - **Below `lg`:** title · a 40px round hamburger (`#menu-btn`, `default-hover` background on hover and while open) that toggles `#menu-items`, a HeroUI Dropdown: `w-60`, `p-2`, `rounded-3xl`, `bg-overlay`, `shadow-overlay`, 40px items (`type-display-body` — Geist Pixel 16/28, `rounded-2_5xl`, `bg-default` on hover/focus) and the full-width CTA as HeroUI's **md** primary button (`h-9`, `type-button-sm`). It closes on Escape (focus returns to the button) or an outside click, and re-initialises after view transitions.
+  - **`lg+`:** title · centred text nav (`type-display-body-sm uppercase` — Geist Pixel 14/24, all caps, `gap-8`, underline on hover) · "Send an email" as HeroUI's **md** primary button (`h-9`, `rounded-3xl`, `bg-accent` → `hover:bg-accent-hover`, `text-accent-foreground`, `type-button-sm`) — the same button as in the dropdown.
+  - **Below `lg`:** title · a 40px round hamburger (`#menu-btn`, `default-hover` background on hover and while open) that toggles `#menu-items`, a HeroUI Dropdown: `w-60`, `p-2`, `rounded-3xl`, `bg-overlay`, `shadow-overlay`, 36px items (`type-display-body-sm uppercase` — Geist Pixel 14/24, all caps, `rounded-2_5xl`, `bg-default` on hover/focus) and the full-width CTA as HeroUI's **md** primary button (`h-9`, `type-button-sm`). It closes on Escape (focus returns to the button) or an outside click, and re-initialises after view transitions.
   - Items come from one `navItems` list shared by both: **Work** (`/`), **Writing** (`/writing`, also active on `/posts/…`), **About** (`/about`).
   - The theme toggle (`#theme-btn`, a 40px round icon button) sits in the right-hand cluster at every width; its final placement is an open decision. There must be exactly one `#theme-btn` — `src/scripts/theme.ts` finds it with `querySelector`.
   - Archives and search are not in the header; their pages (`/archives`, `/search`) still exist but are unlinked.
-- **Footer** (`Footer.astro`) mirrors the header: full-width with a top `border-border` running edge to edge, content in `container-content` with `py-6`. Copyright is `type-body-sm text-muted`; the `Socials` icons are `text-muted` → `hover:text-foreground` (with a small hover tilt). Stacked and centred below `sm`, a single row on `sm+`.
+- **Footer** (`Footer.astro`) mirrors the header: full-width with a top `border-border` running edge to edge, content in `container-content` with `py-6`. Copyright matches the nav links — `type-display-body-sm uppercase` (Geist Pixel 14/24, all caps) — in `text-muted`; the `Socials` icons are `text-muted` → `hover:text-foreground` (with a small hover tilt). Stacked and centred below `sm`, a single row on `sm+`.
 
 ### Layout & breakpoints
 
@@ -138,6 +138,20 @@ A small rulebook built on industry-standard (Tailwind default) values, so layout
 - **Mobile layout must hold up to 1023px.** A tablet held upright gets the mobile layout, so cap mobile content width (reading width, or a max on cards) instead of letting it stretch. Design at 375px and check around 900px.
 - **Desktop layout must hold down to 1024px.** Between 1024px and 1168px the container is fluid; design at 1440px and check at exactly 1024px (and 1023px for the other side).
 - **Figma:** desktop frames should be 1168px wide with 24px padding, so their content area is the 1120px container.
+
+### Motion
+
+Interactions animate subtly and consistently; nothing animates for its own sake.
+
+| Rule | Value | Where |
+| --- | --- | --- |
+| **One transition for all interactive states** | `--duration-interaction: 150ms`, `--ease-interaction` (ease-out) on colour, background, border, underline colour, fill/stroke, shadow, opacity and transforms | Base layer in `global.css`, applied to every `a`, `button`, `summary`, `[role="button"]`. Don't add per-component `transition-*` classes; if something needs a different curve, add a token. |
+| **Underlines fade, they don't pop** | `hover-underline` (and `group-hover-underline` for a `group` parent): a transparent underline whose colour fades in. `type-link-sm` does the same. | Use instead of `hover:underline`, which can't animate. |
+| **Press feedback** | `active:scale-[0.97]` — HeroUI's pressed scale | Buttons only: `primaryButtonClass`, header icon buttons, the modal close button. Not on text links. |
+| **Hover lifts use transforms** | e.g. tags `hover:-translate-y-0.5` | Never animate margin/padding (it shifts layout). |
+| **Reduced motion** | `prefers-reduced-motion: reduce` turns the shared transition off | Built in; colour and underline changes still happen, instantly. |
+
+Longer, decorative motion is separate and deliberate: the back-to-top fade-in (500ms), the theme-toggle icon swap, and Astro view transitions.
 
 ### Icons
 
@@ -173,6 +187,7 @@ Most components accept a `class` prop and merge it with `class:list` — follow 
 ## Guardrails — do not do this
 
 - **Don't hardcode colors in components.** No hex, `rgb()`, or Tailwind palette colors (`text-blue-600`) for UI. Use the semantic tokens. The one deliberate exception is the OG templates.
+- **All caps is a style, not content.** Write labels in normal case and apply `uppercase` (CSS `text-transform`); typing capitals into the markup makes screen readers spell some words out letter by letter.
 - **Don't use opacity as a colour.** Secondary text and icons are `text-muted` (hover to `text-foreground`), not `opacity-75`/`-80` on foreground. Opacity is only for show/hide transitions and for disabled states, which use the HeroUI token: `opacity-(--disabled-opacity)`.
 - **Use `type-*` for text, not raw size/weight/tracking classes.** Pick the closest HeroUI style (`type-h1…h6`, `type-body[-sm|-xs][-medium]`, `type-link`, `type-button`); HeroUI's letter-spacing is 0, so no `tracking-*`, and weights are regular/medium/semibold, so no `font-light`/`font-bold`. The one exception is the 404 page's display numeral.
 - **Soft colours come in pairs.** A `*-soft` background always takes its `*-soft-foreground` text (e.g. search highlights: `warning-soft` + `warning-soft-foreground`), never plain `foreground`.
@@ -236,3 +251,6 @@ Update `design.md` in the **same change** whenever you make or change a design-a
 - 2026-10-02: Swapped the display face from Pixelify Sans to **Geist Pixel** (Google Fonts). It ships one weight (400), so all `type-display-*` styles are regular with `font-synthesis: none`, and the `-medium` variants were removed; sizes and line heights still match the `type-*` scale.
 - 2026-10-02: Header nav links use the **display face**, per the updated Figma "Header design" (node `8:778`): desktop links `type-display-h6` (was `type-h6`), dropdown items `type-display-body` (was `type-body-sm-medium`; items grow from 36px to 40px with the taller line). The site title and "Send an email" stay in Inter. Geist Pixel is now preloaded, since it's in the header on every page.
 - 2026-10-02: **Fixed Inter's preload**, which had never worked: Astro 7.3 records one preload candidate per font file, tagged with the first face's weight (300 for Inter's variable file), so the `weight: 400` filter matched nothing. Inter now preloads by `subset: "latin", style: "normal"`. Dropped the unused 300 weight (nothing uses light since the token audit); Inter is now 400–700, normal + italic.
+- 2026-10-02: Nav links are **all caps** in `type-display-body-sm` (Geist Pixel 14/24) on desktop and in the dropdown, per the updated Figma "Header design" (node `8:778`); was `type-display-h6` / `type-display-body`. Caps come from `uppercase`, not the label text. Dropdown items are 36px again.
+- 2026-10-02: Footer copyright uses the nav-link style (`type-display-body-sm uppercase`), keeping `text-muted`.
+- 2026-10-02: Added **Motion** rules: one shared 150ms ease-out transition on all interactive elements (base layer, motion tokens `--duration-interaction` / `--ease-interaction`, off under reduced motion); `hover-underline` / `group-hover-underline` utilities so underlines fade in instead of popping (replacing every `hover:underline`; `type-link-sm` too); HeroUI's `active:scale-[0.97]` press on buttons; tags lift with `-translate-y-0.5` instead of a negative margin. Removed the scattered per-component `transition-colors`.

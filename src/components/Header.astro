@@ -37,7 +37,7 @@ const navItems = [
 
 // Round 40px icon button (hamburger, theme toggle).
 const iconButtonClass =
-  "relative inline-flex size-10 items-center justify-center rounded-3xl text-default-foreground transition-colors hover:bg-default-hover";
+  "relative inline-flex size-10 items-center justify-center rounded-3xl text-default-foreground hover:bg-default-hover active:scale-[0.97]";
 ---
 
 <a
@@ -62,7 +62,7 @@ const iconButtonClass =
             <a
               href={item.href}
               aria-current={item.active ? "page" : undefined}
-              class="type-display-h6 underline-offset-4 hover:underline"
+              class="type-display-body-sm uppercase hover-underline"
             >
               {item.label}
             </a>
@@ -118,7 +118,7 @@ const iconButtonClass =
                 <a
                   href={item.href}
                   aria-current={item.active ? "page" : undefined}
-                  class="flex min-h-9 items-center rounded-2_5xl px-3 py-1.5 type-display-body text-default-foreground outline-none hover:bg-default focus-visible:bg-default"
+                  class="flex min-h-9 items-center rounded-2_5xl px-3 py-1.5 type-display-body-sm text-default-foreground uppercase outline-none hover:bg-default focus-visible:bg-default"
                 >
                   {item.label}
                 </a>

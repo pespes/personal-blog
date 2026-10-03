@@ -14,6 +14,12 @@
   --container-content: 70rem;
 }
 
+/* Motion tokens for interactive states. */
+:root {
+  --duration-interaction: 150ms;
+  --ease-interaction: cubic-bezier(0, 0, 0.2, 1); /* ease-out */
+}
+
 /* Side padding for containers: 16px on mobile, 24px from the lg (desktop) breakpoint. */
 :root {
   --gutter: 1rem;
@@ -44,6 +50,37 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+  /* Motion: one subtle transition for every interactive state change (hover,
+     press, focus). Animates colour, underline colour, shadow, opacity and
+     transforms only; off for prefers-reduced-motion. See docs/design.md. */
+  a,
+  button,
+  summary,
+  [role="button"] {
+    transition-property:
+      color, background-color, border-color, text-decoration-color, fill,
+      stroke, box-shadow, opacity, transform, translate, scale, rotate;
+    transition-duration: var(--duration-interaction);
+    transition-timing-function: var(--ease-interaction);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a,
+    button,
+    summary,
+    [role="button"] {
+      transition: none;
+    }
+  }
+}
+
+/* Underline that fades in on hover (text-decoration-line can't animate, its
+   colour can). Use instead of `hover:underline`. */
+@utility hover-underline {
+  @apply underline decoration-transparent underline-offset-4 hover:decoration-current;
+}
+/* Same, driven by a `group` ancestor's hover. */
+@utility group-hover-underline {
+  @apply underline decoration-transparent underline-offset-4 group-hover:decoration-current;
 }
 
 /* Reading width for long-form text (posts, case studies, About): 768px. */

@@ -394,7 +394,7 @@ html[data-theme="dark"] {
   @apply text-base font-medium underline; /* 16/24 */
 }
 @utility type-link-sm {
-  @apply text-sm font-medium hover:underline; /* 14/20, underline on hover */
+  @apply text-sm font-medium underline decoration-transparent underline-offset-4 hover:decoration-current; /* 14/20, underline fades in on hover */
 }
 
 @utility type-field {

@@ -15,10 +15,7 @@ const { title, description, ...props } = data;
 <li class="my-6">
   <a
     href={getPath(id, filePath)}
-    class:list={[
-      "inline-block type-h5 text-link",
-      "underline-offset-4 hover:underline",
-    ]}
+    class:list={["inline-block type-h5 text-link", "hover-underline"]}
   >
     <Heading>{title}</Heading>
   </a>
