@@ -1,0 +1,51 @@
+---
+import { getEntry } from "astro:content";
+import { Image } from "astro:assets";
+import Scramble from "@/components/Scramble.astro";
+import portrait from "@/assets/images/hero/portrait.png";
+
+// Copy is edited in Keystatic ("Work hero" → src/data/hero.yaml).
+const hero = await getEntry("hero", "hero");
+if (!hero)
+  throw new Error("Missing src/data/hero.yaml (Keystatic: Work hero).");
+const { eyebrow, headline, body } = hero.data;
+const paragraphs = body
+  .split(/\n\s*\n/)
+  .map(p => p.trim())
+  .filter(Boolean);
+---
+
+<!-- Work hero (Personal blog Figma, node 79:333). Below lg the gradient band is
+     full-width and stacks text over the portrait; from lg it's the 1120px
+     container with two columns. Pinned to the light theme in both modes:
+     data-theme="light" re-applies the light tokens inside it, and text-foreground
+     resets the colour it would otherwise inherit from the (dark) body. -->
+<section class="text-foreground lg:container-content" data-theme="light">
+  <div class="bg-linear-to-b from-hero-from to-hero-to lg:grid lg:grid-cols-2 lg:items-center">
+    <div class="container-content py-8 lg:m-0 lg:w-auto lg:px-10 lg:py-0">
+      <div class="flex max-w-120 flex-col gap-6">
+        {eyebrow.length > 1 ? (
+          <Scramble as="p" class="type-display-body-xs" strings={eyebrow} />
+        ) : (
+          <p class="type-display-body-xs">{eyebrow[0]}</p>
+        )}
+        <h1 class="type-h2">{headline}</h1>
+        <div class="flex flex-col gap-4 type-body-medium text-muted">
+          {paragraphs.map(p => (
+            <p>{p}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+    {/* Engraving on white: `darken` drops the white into the gradient. */}
+    <Image
+      src={portrait}
+      alt="Engraving-style portrait of Peter Esveld"
+      widths={[440, 560, 880, 1120]}
+      sizes="(min-width: 64rem) 35rem, 100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="aspect-44/34 w-full object-cover object-[50%_67%] mix-blend-darken lg:aspect-auto"
+    />
+  </div>
+</section>

@@ -21,7 +21,7 @@ pnpm sync         # Sync Astro content types
 ```text
 docs/             # Project documentation (design.md = design & theming reference)
 src/
-  components/     # 15 Astro components (Header, Card, Tag, Datetime, Video, etc.)
+  components/     # 17 Astro components (Header, Hero, Card, Tag, Datetime, Video, Scramble, etc.)
   layouts/        # Layout, PostDetails, Main, AboutLayout
   pages/          # Routes — static and dynamic
     api/          # (Keystatic API is injected automatically by @keystatic/astro — no manual file needed)
@@ -59,6 +59,10 @@ featured: false
 ```
 
 The Keystatic CMS UI is available at `/keystatic` in dev mode (`pnpm dev`).
+
+### Work hero
+
+The Work page hero copy (eyebrow phrases, headline, body) is a Keystatic **singleton**, "Work hero", stored in `src/data/hero.yaml` and loaded as the Astro collection `hero` (`getEntry("hero", "hero")`). With two or more eyebrow phrases, the eyebrow scrambles between them on hover.
 
 ### Case studies (Work)
 

@@ -4,13 +4,14 @@
 @import "./heroui-theme.css";
 @import "./typography.css";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+/* Dark mode, except inside an element pinned to light (data-theme="light"). */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *):not(:where([data-theme=light], [data-theme=light] *)));
 
 @theme inline {
   --font-app: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
   --font-display: var(--font-geist-pixel);
-  /* Page content width: 1120px of content; side padding (--gutter) sits outside it. */
+  /* Page content width: 1120px; container-content keeps at least --gutter beside it. */
   --container-content: 70rem;
 }
 
@@ -20,14 +21,9 @@
   --ease-interaction: cubic-bezier(0, 0, 0.2, 1); /* ease-out */
 }
 
-/* Side padding for containers: 16px on mobile, 24px from the lg (desktop) breakpoint. */
+/* Side padding for containers: 24px at every width. */
 :root {
-  --gutter: 1rem;
-}
-@media (width >= 64rem) {
-  :root {
-    --gutter: 1.5rem;
-  }
+  --gutter: 1.5rem;
 }
 
 @layer base {
@@ -40,7 +36,7 @@
     @apply scroll-smooth;
   }
   body {
-    @apply flex min-h-svh flex-col bg-background font-app text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-page font-app text-foreground selection:bg-accent/75 selection:text-page;
   }
   a,
   button {
@@ -88,16 +84,15 @@
   @apply max-w-3xl;
 }
 
-/* Page container: up to 1120px of content, centred, with --gutter outside it.
+/* Page container: up to 1120px of content, centred. No padding: the box is
+   1120px wide when the window has room, and shrinks to keep at least --gutter
+   free on each side when it doesn't, so there is no jump at any width.
    Full-width chrome (header, footer, bands) puts this inside itself. */
 @utility container-content {
-  width: 100%;
-  max-width: calc(var(--container-content) + 2 * var(--gutter));
+  width: min(100% - 2 * var(--gutter), var(--container-content));
   margin-inline: auto;
-  padding-inline: var(--gutter);
 }
 
-/* Reading-width page column: 768px of content, centred, with --gutter outside it. */
 /* Display type styles: the HeroUI type scale (type-h1…h6, type-body*) set in
    the display face, Geist Pixel. Same sizes and line heights as their type-*
    twins, so the two sets can swap without changing layout. Geist Pixel has one
@@ -139,11 +134,11 @@
   font-synthesis: none;
 }
 
+/* Reading-width page column: 768px of content, centred. Same approach as
+   container-content: no padding, at least --gutter free on each side. */
 @utility app-layout {
-  width: 100%;
-  max-width: calc(var(--container-3xl) + 2 * var(--gutter));
+  width: min(100% - 2 * var(--gutter), var(--container-3xl));
   margin-inline: auto;
-  padding-inline: var(--gutter);
 }
 
 /* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */

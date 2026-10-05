@@ -9,7 +9,9 @@
  * stock Tailwind v4 and are intentionally omitted.
  *
  * Adaptations vs Figma:
- *  - Light/Dark modes → html[data-theme] blocks (the blog's theming mechanism).
+ *  - Light/Dark modes → [data-theme] blocks (the blog's theming mechanism). Set
+ *    on <html>; also usable on any element to pin a section to one theme (e.g.
+ *    the Work hero is always light).
  *  - Figma groups are flattened: `accent/accent` → --accent,
  *    `foreground/muted` → --muted, `foreground/link` → --link,
  *    `focus-ring` → --focus, `field/background` → --field-background.
@@ -21,7 +23,7 @@
 /* ------------------------------------------------------------------ */
 
 :root,
-html[data-theme="light"] {
+[data-theme="light"] {
   /* Canvas */
   --background: #f5f5f5;
   --background-secondary: #ebebeb;
@@ -116,13 +118,23 @@ html[data-theme="light"] {
   --field-shadow: #0000000a;
   --field-shadow-2: #0000000f;
   --overlay-shadow: #00000000;
-  --shadow-scroll: var(--background);
+  --shadow-scroll: var(--page);
   --shadow-scroll-on-surface: var(--surface);
   --shadow-scroll-blur: #f5f5f5b2;
   --shadow-scroll-blur-on-surface: #ffffffb2;
+
+  /* Site-specific (not HeroUI). Page: the site's canvas — white (= surface) in
+     light mode, so pages match the Figma frames; HeroUI's gray `background`
+     stays available. */
+  --page: var(--surface);
+
+  /* Site-specific (not HeroUI): Work hero gradient, top → bottom. Light values
+     from the Personal blog Figma (node 79:333). */
+  --hero-from: #e4fcff;
+  --hero-to: #f5fafa;
 }
 
-html[data-theme="dark"] {
+[data-theme="dark"] {
   --background: #060607;
   --background-secondary: #0c0c0e;
   --background-tertiary: #131316;
@@ -204,10 +216,13 @@ html[data-theme="dark"] {
   --field-shadow: #ffffff00;
   --field-shadow-2: #ffffff00;
   --overlay-shadow: #ffffff4d;
-  --shadow-scroll: var(--background);
+  --shadow-scroll: var(--page);
   --shadow-scroll-on-surface: var(--surface);
   --shadow-scroll-blur: #060607b2;
   --shadow-scroll-blur-on-surface: #18181bb2;
+
+  /* Page: unchanged in dark mode (= background). */
+  --page: var(--background);
 }
 
 /* ------------------------------------------------------------------ */
@@ -249,6 +264,9 @@ html[data-theme="dark"] {
   --color-overlay: var(--overlay);
   --color-overlay-foreground: var(--overlay-foreground);
   --color-backdrop: var(--backdrop);
+  --color-page: var(--page);
+  --color-hero-from: var(--hero-from);
+  --color-hero-to: var(--hero-to);
   --color-segment: var(--segment);
   --color-segment-foreground: var(--segment-foreground);
 
@@ -337,7 +355,7 @@ html[data-theme="dark"] {
    ring after a 2px gap. Built on Tailwind's ring utilities so it composes with
    an element's own shadow-* instead of replacing it. */
 @utility focus-ring {
-  @apply outline-none focus-visible:ring-[length:calc(var(--ring-focus-width)-var(--ring-offset-width))] focus-visible:ring-focus focus-visible:ring-offset-(length:--ring-offset-width) focus-visible:ring-offset-background;
+  @apply outline-none focus-visible:ring-[length:calc(var(--ring-focus-width)-var(--ring-offset-width))] focus-visible:ring-focus focus-visible:ring-offset-(length:--ring-offset-width) focus-visible:ring-offset-page;
 }
 
 /* Tight 2px ring, no gap, for inputs. */

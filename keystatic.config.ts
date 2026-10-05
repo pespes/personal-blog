@@ -1,4 +1,4 @@
-import { config, fields, collection } from '@keystatic/core';
+import { config, fields, collection, singleton } from '@keystatic/core';
 import { SITE } from "./src/config";
 
 // Fields shared by blog posts and case studies. `imageDir` is the folder
@@ -88,6 +88,35 @@ export default config({
           description:
             'Encrypts the case study at build time; visitors need WORK_PASSWORD to read it.',
           defaultValue: false,
+        }),
+      },
+    }),
+  },
+  singletons: {
+    hero: singleton({
+      label: 'Work hero',
+      path: 'src/data/hero',
+      format: { data: 'yaml' },
+      schema: {
+        eyebrow: fields.array(
+          fields.text({ label: 'Phrase', validation: { isRequired: true } }),
+          {
+            label: 'Eyebrow phrases',
+            description:
+              'The first phrase shows on load; hovering scrambles to the next. Keep them a similar length; the space reserved is the longest one.',
+            itemLabel: props => props.value,
+            validation: { length: { min: 1 } },
+          }
+        ),
+        headline: fields.text({
+          label: 'Headline',
+          validation: { isRequired: true },
+        }),
+        body: fields.text({
+          label: 'Body',
+          multiline: true,
+          description: 'A blank line starts a new paragraph.',
+          validation: { isRequired: true },
         }),
       },
     }),

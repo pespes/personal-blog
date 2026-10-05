@@ -1,0 +1,165 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import {
+  SCRAMBLE_DEFAULTS,
+  resolvePool,
+  type ScramblePoolName,
+} from "@/utils/scramble";
+
+type Tag = "span" | "p" | "div" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
+interface Props extends Omit<HTMLAttributes<"span">, "class"> {
+  /** First string is shown on load and is what screen readers hear. */
+  strings: string[];
+  /** cycle: each hover moves to the next string and stays.
+   *  revert: hover scrambles to the next alternate, leaving scrambles back to the first. */
+  mode?: "cycle" | "revert";
+  /** A preset (symbols, punctuation, letters) or a custom string of characters. */
+  pool?: ScramblePoolName | (string & {});
+  /** Duration in ms. */
+  duration?: number;
+  /** 0–1: randomness in the order letters settle. */
+  randomness?: number;
+  /** 0–1: chance each unsettled character changes per frame. */
+  flicker?: number;
+  as?: Tag;
+  class?: string;
+}
+
+const {
+  strings,
+  mode = "cycle",
+  pool = "symbols",
+  duration = SCRAMBLE_DEFAULTS.duration,
+  randomness = SCRAMBLE_DEFAULTS.randomness,
+  flicker = SCRAMBLE_DEFAULTS.flicker,
+  as: Tag = "span",
+  class: className,
+  ...rest
+} = Astro.props;
+
+if (strings.length < 2) {
+  throw new Error("<Scramble> needs at least two strings.");
+}
+
+const config = JSON.stringify({
+  strings,
+  mode,
+  pool: resolvePool(pool),
+  duration,
+  randomness,
+  flicker,
+});
+---
+
+<Tag class={className} data-scramble={config} {...rest}>
+  <span class="sr-only">{strings[0]}</span>
+  {/* Every string sits invisibly in one grid cell, so the box is always the
+      size of the largest (wrapping included) and never shifts. The visible
+      text is an overlay on top that doesn't affect layout. */}
+  <span class="relative inline-grid" aria-hidden="true" data-pagefind-ignore>
+    {strings.map(s => (
+      <span class="invisible col-start-1 row-start-1" data-scramble-copy>
+        {s}
+      </span>
+    ))}
+    {/* overflow-x-clip: mid-scramble lines can run wider than the box (see
+        runScramble); clip them so they never cause horizontal scrolling. */}
+    <span class="absolute inset-0 overflow-x-clip" data-scramble-text>
+      {strings[0]}
+    </span>
+  </span>
+</Tag>
+
+<script>
+  import {
+    lineStarts,
+    runScramble,
+    warnMissingGlyphs,
+    type ScrambleOptions,
+  } from "@/utils/scramble";
+
+  interface Config extends ScrambleOptions {
+    strings: string[];
+    mode: "cycle" | "revert";
+    pool: string;
+  }
+
+  // Short pause after a cycle finishes before another hover counts.
+  const COOLDOWN_MS = 175;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  let controller: AbortController | undefined;
+  const stops = new Set<() => void>();
+
+  function init() {
+    // Re-run after view transitions swap the page; drop old listeners/frames.
+    controller?.abort();
+    stops.forEach(stop => stop());
+    stops.clear();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    document.querySelectorAll<HTMLElement>("[data-scramble]").forEach(root => {
+      const text = root.querySelector<HTMLElement>("[data-scramble-text]");
+      const copies = root.querySelectorAll<HTMLElement>("[data-scramble-copy]");
+      if (!text) return;
+      const config: Config = JSON.parse(root.dataset.scramble!);
+      const { strings, mode, pool } = config;
+
+      if (import.meta.env.DEV) warnMissingGlyphs(text, pool);
+
+      let index = 0; // string currently shown (or being scrambled to)
+      let alternate = 0; // revert mode: last alternate used
+      let busy = false;
+      let stop: (() => void) | undefined;
+
+      const go = (to: number, onDone?: () => void) => {
+        stop?.();
+        if (stop) stops.delete(stop);
+        const from = text.textContent ?? "";
+        index = to;
+        stop = runScramble(
+          text,
+          from,
+          strings[to],
+          pool,
+          config,
+          lineStarts(copies[to]),
+          onDone
+        );
+        stops.add(stop);
+      };
+
+      root.addEventListener(
+        "mouseenter",
+        () => {
+          if (reducedMotion.matches) return;
+          if (mode === "revert") {
+            alternate = (alternate % (strings.length - 1)) + 1;
+            go(alternate);
+            return;
+          }
+          if (busy) return;
+          busy = true;
+          go((index + 1) % strings.length, () =>
+            setTimeout(() => (busy = false), COOLDOWN_MS)
+          );
+        },
+        { signal }
+      );
+
+      if (mode === "revert") {
+        root.addEventListener(
+          "mouseleave",
+          () => {
+            if (!reducedMotion.matches && index !== 0) go(0);
+          },
+          { signal }
+        );
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", init);
+</script>

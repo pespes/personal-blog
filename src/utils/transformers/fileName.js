@@ -55,7 +55,7 @@ export const transformerFileName = ({
             : "pl-4 pr-2 before:inline-block before:size-1 before:bg-success before:rounded-full before:absolute before:top-[45%] before:left-2",
           style === "v1"
             ? "left-0 -top-6 rounded-t-md border border-b-0 bg-surface-tertiary/50"
-            : "left-2 top-(--file-name-offset) border rounded-md bg-background",
+            : "left-2 top-(--file-name-offset) border rounded-md bg-page",
         ],
       },
       children: [

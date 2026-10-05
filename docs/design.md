@@ -40,7 +40,7 @@ Figma group paths are flattened to HeroUI's CSS names (`accent/accent` → `--ac
 
 | Group | Tokens (Tailwind: `bg-*` / `text-*` / `border-*`) | Role |
 | --- | --- | --- |
-| Canvas | `background` (+ `-secondary`, `-tertiary`, `-inverse`), `foreground` | Page background (`#f5f5f5` / `#060607`) and body text (`#18181b` / `#fcfcfc`) |
+| Canvas | `page`, `background` (+ `-secondary`, `-tertiary`, `-inverse`), `foreground` | **`page` is the site's canvas** (site token, not HeroUI): `surface` (`#ffffff`) in light, `background` (`#060607`) in dark. Use it for anything that should match the page — body, focus-ring gap (`ring-offset-page`), skip link, back-to-top, progress bar, code filename tab, scroll shadow, Pagefind. HeroUI's `background` (`#f5f5f5` light) stays available but isn't the page. Body text `foreground` (`#18181b` / `#fcfcfc`). |
 | Text | `muted`, `link` | Secondary text (dates, captions, prev/next titles); links (= `foreground`, distinguished by underline) |
 | Surfaces | `surface` (+ `-secondary`, `-tertiary`, each with `-foreground`) | Cards and panels on the canvas. `surface-tertiary` is the subtle fill for inline code, the code-copy button, the code-filename tab, search tips and the scrollbar thumb. |
 | Overlays | `overlay`, `overlay-foreground`, `backdrop` | Popovers, menus, modals |
@@ -49,6 +49,7 @@ Figma group paths are flattened to HeroUI's CSS names (`accent/accent` → `--ac
 | Status | `default`, `accent`, `success`, `warning`, `danger` | Each has six slots: base, `-hover`, `-foreground`, `-soft`, `-soft-hover`, `-soft-foreground` |
 | Forms | `field` (+ `-hover`, `-focus`), `field-foreground`, `field-placeholder`, `field-border` (+ `-hover`) | Inputs. Field borders are fully transparent in HeroUI; fields get their edge from `shadow-field`. |
 | Other | `segment`, `segment-foreground`, `chart-1…5` | Segmented controls, charts |
+| Site-specific | `hero-from`, `hero-to` | Work hero gradient, top → bottom (`bg-linear-to-b from-hero-from to-hero-to`). Not HeroUI: from the Personal blog Figma (node `79:333`, `#e4fcff` → `#f5fafa`, unbound there). Light only: the hero is pinned to light. |
 
 The full HeroUI set is kept even where nothing consumes it yet (fields, segment, charts, status colors): unused variables cost nothing and keep parity with HeroUI.
 
@@ -70,7 +71,8 @@ From HeroUI's Figma effect styles, as `shadow-*` utilities: `shadow-surface` (ca
 
 ### Light / dark mode
 
-- **Attribute-driven, not media-query-driven.** The active theme is `data-theme="light" | "dark"` on `<html>`. Tailwind's `dark:` variant is redefined to follow it: `@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *))`.
+- **Attribute-driven, not media-query-driven.** The active theme is `data-theme="light" | "dark"` on `<html>`. Tailwind's `dark:` variant is redefined to follow it, except inside a light island: `@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *):not(:where([data-theme=light], [data-theme=light] *)))`.
+- **Pinning a section to light.** The token blocks in `heroui-theme.css` match `[data-theme]` on any element, so `data-theme="light"` on a section re-applies the light tokens inside it and turns off `dark:` variants. Also set `text-foreground` on it: text colour is inherited as a resolved value from the body, so without it text keeps the dark-mode colour. Used by the Work hero. (Only light islands are supported; the `dark:` variant doesn't handle a dark island inside a light page.)
 - **Resolution order:** the user's saved choice (`localStorage.theme`) → the site default (`initialColorScheme`, currently `""`) → the OS `prefers-color-scheme`.
 - **No flash of the wrong theme:** a small inline script in the `<head>` of `Layout.astro` sets `data-theme` before first paint. `src/scripts/theme.ts` then takes over — wires the `#theme-btn` toggle, persists the choice, keeps `<meta name="theme-color">` in sync with the body background, and re-applies the theme after Astro view transitions.
 - **`initialColorScheme` is duplicated** in the inline script and `theme.ts` — change both together.
@@ -113,7 +115,7 @@ All three fonts are registered in `astro.config.ts` (`fonts: [...]`) **and** nee
 - **Active nav item:** marked with `aria-current="page"` only; there is no visible active state (matching Figma). Nav links underline on hover.
 - **Links:** `text-link` + underline (`underline-offset-4`); UI links (nav, `LinkButton`, `EditPost`, back-to-top) underline on hover instead of changing color.
 - **Selection:** `bg-accent/75` with `text-background`.
-- **Header** (`Header.astro`, from the "Header design" section, node `8:778`, in the Personal blog Figma file): full-width (the bottom `border-border` runs edge to edge), with its content in `container-content` (up to 1120px of content, `--gutter` padding outside it); `py-8` on `lg+` / `py-6` below. Site title is `type-h4`.
+- **Header** (`Header.astro`, from the "Header design" section, node `8:778`, in the Personal blog Figma file): full-width (the bottom `border-border` runs edge to edge), with its content in `container-content` (up to 1120px wide, at least `--gutter` from the window edge); `py-8` on `lg+` / `py-6` below. Site title is `type-h4`.
   - **`lg+`:** title · centred text nav (`type-display-body-sm uppercase` — Geist Pixel 14/24, all caps, `gap-8`, underline on hover) · "Send an email" as HeroUI's **md** primary button (`h-9`, `rounded-3xl`, `bg-accent` → `hover:bg-accent-hover`, `text-accent-foreground`, `type-button-sm`) — the same button as in the dropdown.
   - **Below `lg`:** title · a 40px round hamburger (`#menu-btn`, `default-hover` background on hover and while open) that toggles `#menu-items`, a HeroUI Dropdown: `w-60`, `p-2`, `rounded-3xl`, `bg-overlay`, `shadow-overlay`, 36px items (`type-display-body-sm uppercase` — Geist Pixel 14/24, all caps, `rounded-2_5xl`, `bg-default` on hover/focus) and the full-width CTA as HeroUI's **md** primary button (`h-9`, `type-button-sm`). It closes on Escape (focus returns to the button) or an outside click, and re-initialises after view transitions.
   - Items come from one `navItems` list shared by both: **Work** (`/`), **Writing** (`/writing`, also active on `/posts/…`), **About** (`/about`).
@@ -128,10 +130,10 @@ A small rulebook built on industry-standard (Tailwind default) values, so layout
 | Rule | Value | Where |
 | --- | --- | --- |
 | **One layout breakpoint** | `lg` = **1024px**. Below it the layout is mobile; at and above it, desktop. There is no tablet layout. | Use only `lg:` (and `max-lg:`) for responsive changes. No `sm:`/`md:`/`xl:` anywhere. |
-| **Page container** | Up to **1120px of content** (`--container-content: 70rem`), centred, with the side padding *outside* it (so it reaches 1168px of screen on desktop). | `container-content` utility (`global.css`). |
+| **Page container** | Up to **1120px of content** (`--container-content: 70rem`), centred. No padding: `width: min(100% - 2 × --gutter, 70rem)`, so it is exactly 1120px once the window has room (1168px+ on desktop) and below that shrinks to keep `--gutter` free on each side. | `container-content` utility (`global.css`). |
 | **Reading width** | **768px of content** (`max-w-3xl`) for long-form text: posts, case studies, About. Line length stays near 65–75 characters. | `app-layout` (page column) and `max-w-app` (prose). |
-| **Side padding** | `--gutter`: **16px** below `lg`, **24px** from `lg`. | Built into `container-content` and `app-layout`. |
-| **Page titles** | `type-h2 lg:type-h1` (30px → 36px) on every page's `h1`; section headings `type-h3`. | Post, case study, About, `Main` (Posts, Tags, Archives, Search). |
+| **Side padding** | `--gutter`: **24px** at every width (matches the Figma mobile and desktop frames). | Kept as a minimum gap (no padding) by `container-content` and `app-layout`. |
+| **Page titles** | `type-h2 lg:type-h1` (30px → 36px) on every page's `h1`; section headings `type-h3`. Exception: on Work the hero headline is the `h1` and stays `type-h2` at every size, per the Figma. | Post, case study, About, `Main` (Posts, Tags, Archives, Search). |
 | **Spacing, type, radii** | Tailwind's default scales via the HeroUI tokens (4px/8px grid). | — |
 
 - **Full-width chrome, contained content.** Layout elements that hold content — the header, the footer, any full-bleed band or section — may span the full window width (backgrounds, borders). The content inside them always sits in `container-content` (or `app-layout` for text). Only the container gets the max width, never the chrome.
@@ -151,7 +153,21 @@ Interactions animate subtly and consistently; nothing animates for its own sake.
 | **Hover lifts use transforms** | e.g. tags `hover:-translate-y-0.5` | Never animate margin/padding (it shifts layout). |
 | **Reduced motion** | `prefers-reduced-motion: reduce` turns the shared transition off | Built in; colour and underline changes still happen, instantly. |
 
-Longer, decorative motion is separate and deliberate: the back-to-top fade-in (500ms), the theme-toggle icon swap, and Astro view transitions.
+Longer, decorative motion is separate and deliberate: the back-to-top fade-in (500ms), the theme-toggle icon swap, the text scramble (below), and Astro view transitions.
+
+**Text scramble — `Scramble.astro`.** On hover, text turns into a flicker of symbols and settles into the next string (letters settle roughly left to right). Opt-in and decorative.
+
+```astro
+<Scramble as="p" class="type-display-body-sm" strings={["First", "Second", "Third"]} />
+```
+
+- **No layout shift.** Every string sits invisibly in one grid cell, so the box is the size of the largest (wrapping included, at the current width); the visible text is an absolute overlay on top. The box is an inline grid, so use it as its own line or element, not mid-sentence.
+- **Typeface comes from `class`** like any text. **Alignment** follows the surrounding text.
+- **`mode`**: `cycle` (default; each hover moves to the next string and stays, hovers during a scramble are ignored) or `revert` (hover scrambles to the next alternate, leaving scrambles back to the first).
+- **`pool`**: a preset from `src/utils/scramble.ts` — `symbols` (default, `§±×÷¢£¥€®¶¤¬`), `punctuation` (`#$&+<=>?_~«»¿`), `letters` (A–Z + É, minus I M W) — or a custom string. Presets are in both Geist Pixel and Inter and letter-width (0.45–0.8em) so the texture stays even. In `pnpm dev`, the console warns about any pool character the element's font lacks.
+- **Timing**: `duration` 1000ms, ease-in-out; `randomness` 0.3 (settle order); `flicker` 0.5625 (chance a symbol changes per frame). Spaces never scramble.
+- **Hover only**; every page load starts on the first string. Screen readers always hear the first string (the animated layers are `aria-hidden` and `data-pagefind-ignore`). Under reduced motion, hovering does nothing.
+- No Figma counterpart: designs use the plain text style.
 
 ### Icons
 
@@ -167,15 +183,16 @@ OG images are generated by Satori from `src/utils/og-templates/{site,post}.js`, 
 
 ## Components
 
-All UI lives in `src/components/` (15 `.astro` components) and `src/layouts/` (`Layout`, `Main`, `PostDetails`, `AboutLayout`).
+All UI lives in `src/components/` (17 `.astro` components) and `src/layouts/` (`Layout`, `Main`, `PostDetails`, `AboutLayout`).
 
 | Group | Components |
 | --- | --- |
 | Navigation | `Header`, `Breadcrumb`, `Pagination`, `BackButton`, `BackToTopButton` |
-| Content | `Card`, `Datetime`, `Tag`, `EditPost`, `Video` |
+| Content | `Card`, `Datetime`, `Tag`, `EditPost`, `Video`, `Scramble` (hover text scramble, see Motion) |
 | Social | `Socials` (in `Footer`), `ShareLinks` (end of a post) |
 | Primitives | `LinkButton` — the base link atom that the composite links wrap |
-| Work | `ProtectedContent` — password gate for protected case studies, as a HeroUI **Modal size=xs** (Personal blog Figma node `16:3839`): native `<dialog>` + `showModal()`, `w-80 p-6 rounded-3xl bg-overlay shadow-overlay`, `backdrop:bg-backdrop`; lock avatar (`bg-default`), `type-body-medium` title, `type-body-sm text-muted` description, label-less field using HeroUI's **secondary Input** variant (`bg-default` → `hover:bg-default-hover`, no shadow; `sr-only` label, `aria-invalid:border-danger`), one reserved message line (`type-body-xs`; errors in `danger-soft-foreground`, hints such as Caps Lock in `muted`), full-width md primary button, 24px `bg-default` close button. Closing without unlocking leaves a `bg-surface` locked notice with an "Enter password" button. |
+| Work | `Hero` — the Work page hero (Personal blog Figma, node `79:333`); copy from the Keystatic singleton "Work hero" (`src/data/hero.yaml`), eyebrow phrases via `Scramble`. Below `lg`: a full-width gradient band, text (in `container-content`, `py-8`) over the portrait (cropped to 44:34). From `lg`: the band is the 1120px container, two equal columns, text inset 40px (`px-10`, max 480px) and vertically centred, portrait 560px wide. Eyebrow `type-display-body-xs`, headline `type-h2` (the page `h1`), body `type-body-medium text-muted`. The engraving portrait uses `mix-blend-darken` so its white drops into the gradient. **Always light:** `data-theme="light"` + `text-foreground` on the section pin it to the light theme in dark mode (see Light / dark mode). Placeholders: eyebrow phrases 2 and 3. |
+| Work (case studies) | `ProtectedContent` — password gate for protected case studies, as a HeroUI **Modal size=xs** (Personal blog Figma node `16:3839`): native `<dialog>` + `showModal()`, `w-80 p-6 rounded-3xl bg-overlay shadow-overlay`, `backdrop:bg-backdrop`; lock avatar (`bg-default`), `type-body-medium` title, `type-body-sm text-muted` description, label-less field using HeroUI's **secondary Input** variant (`bg-default` → `hover:bg-default-hover`, no shadow; `sr-only` label, `aria-invalid:border-danger`), one reserved message line (`type-body-xs`; errors in `danger-soft-foreground`, hints such as Caps Lock in `muted`), full-width md primary button, 24px `bg-default` close button. Closing without unlocking leaves a `bg-surface` locked notice with an "Enter password" button. |
 | Chrome | `Footer` |
 
 The HeroUI **md primary button** classes live in `src/utils/buttonClasses.ts` (`primaryButtonClass`, no display value) and are shared by the header CTA and the case-study unlock button — reuse it rather than re-typing the class list.
@@ -206,7 +223,6 @@ Most components accept a `class` prop and merge it with `class:list` — follow 
 
 ## Open decisions
 
-- **Theme toggle placement.** The new header design (Personal blog Figma, node `8:778`) has no theme toggle. It stays in the header for now until a home is chosen.
 - **OG images and theme tokens.** The OG templates carry their own hardcoded palette. Decide whether they should match the site tokens before turning `dynamicOgImage` on.
 
 ---
@@ -254,3 +270,11 @@ Update `design.md` in the **same change** whenever you make or change a design-a
 - 2026-10-02: Nav links are **all caps** in `type-display-body-sm` (Geist Pixel 14/24) on desktop and in the dropdown, per the updated Figma "Header design" (node `8:778`); was `type-display-h6` / `type-display-body`. Caps come from `uppercase`, not the label text. Dropdown items are 36px again.
 - 2026-10-02: Footer copyright uses the nav-link style (`type-display-body-sm uppercase`), keeping `text-muted`.
 - 2026-10-02: Added **Motion** rules: one shared 150ms ease-out transition on all interactive elements (base layer, motion tokens `--duration-interaction` / `--ease-interaction`, off under reduced motion); `hover-underline` / `group-hover-underline` utilities so underlines fade in instead of popping (replacing every `hover:underline`; `type-link-sm` too); HeroUI's `active:scale-[0.97]` press on buttons; tags lift with `-translate-y-0.5` instead of a negative margin. Removed the scattered per-component `transition-colors`.
+- 2026-10-05: `container-content` has **no padding** any more: `width: min(100% - 2 * var(--gutter), var(--container-content))` + `margin-inline: auto` replaces `max-width: calc(70rem + 2 * gutter)` + `padding-inline`. At full width the header/footer content box is exactly 1120px with no side padding; on narrower windows `--gutter` (24px desktop, 16px mobile) stays free as a gap. Content edges are unchanged at every width, and there is no jump.
+- 2026-10-05: `app-layout` uses the same **no-padding** approach as `container-content`: `width: min(100% - 2 * var(--gutter), var(--container-3xl))` + `margin-inline: auto` (was `max-width: calc(768px + 2 * gutter)` + `padding-inline`). The box is now exactly the reading width; text edges are unchanged at every width.
+- 2026-10-05: Added **`Scramble.astro`** + `src/utils/scramble.ts`: a hover text scramble (cycle or revert) with zero layout shift (all strings reserved in one grid cell, visible text as an overlay), preset character pools checked against Geist Pixel and Inter, a dev-only missing-glyph warning, fixed first-string accessible text, and nothing under reduced motion. Not placed on any page yet.
+- 2026-10-05: Added the **Work hero** (`Hero.astro`) from Figma node `79:333`, with copy in a new Keystatic **singleton** ("Work hero" → `src/data/hero.yaml`, Astro collection `hero`) and the eyebrow on `Scramble`. Added site-specific tokens `--hero-from` / `--hero-to` (gradient; dark values chosen in code). The hero headline is the Work page's `h1` at `type-h2` (exception to the page-title rule). The portrait (`src/assets/images/hero/portrait.png`, exported from Figma) blends with `darken`, inverted with `lighten` in dark mode. Removed the **theme-toggle placement** open decision: the toggle is now in the Figma header (`Theme toggle` component set). Added the dark-mode portrait as an open decision.
+- 2026-10-05: **`--gutter` is 24px at every width** (was 16px below `lg`, set 2026-09-29). Header, footer, hero and reading column all move together, so the shared left edge holds, and the mobile hero matches the Figma 24px padding.
+- 2026-10-05: **Scramble keeps the final text's line breaks while animating.** Scramble characters are wider than many letters, so the overlay used to wrap onto an extra line mid-scramble (spilling over the content below). It now breaks only where the target string's reserved copy wraps (`lineStarts`), with `white-space: pre` during the run and `overflow-x: clip` on the overlay; normal wrapping returns when it finishes.
+- 2026-10-05: **Page background is white in light mode.** Added the site token `--page` (`bg-page`): `var(--surface)` (#fff) in light, `var(--background)` (#060607, unchanged) in dark, and moved every "page colour" use onto it (body, selection text, `focus-ring` offset, `--shadow-scroll`, skip link, back-to-top, reading-progress bar, code filename tab, Pagefind background and ring). Was HeroUI's `background` (#f5f5f5) since 2026-09-27; the Figma frames are white. White `surface` panels on the page now rely on `shadow-surface` to stand out.
+- 2026-10-05: **The Work hero is pinned to light** in both modes. Theme token blocks now match `[data-theme]` on any element (was `html[data-theme]`), the `dark:` variant skips `[data-theme=light]` islands, and the hero section sets `data-theme="light"` + `text-foreground`. Removed the dark hero gradient values and the portrait inversion; closed the "hero portrait in dark mode" open decision.

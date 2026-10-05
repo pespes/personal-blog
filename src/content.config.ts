@@ -5,6 +5,7 @@ import { SITE } from "@/config";
 
 export const BLOG_PATH = "src/data/blog";
 export const WORK_PATH = "src/data/work";
+export const DATA_PATH = "src/data";
 
 // Frontmatter shared by blog posts and case studies.
 const postSchema = ({ image }: SchemaContext) =>
@@ -37,4 +38,14 @@ const work = defineCollection({
     }),
 });
 
-export const collections = { blog, work };
+// Work hero (Keystatic singleton "Work hero"): one YAML file, entry id "hero".
+const hero = defineCollection({
+  loader: glob({ pattern: "hero.yaml", base: `./${DATA_PATH}` }),
+  schema: z.object({
+    eyebrow: z.array(z.string()).min(1),
+    headline: z.string(),
+    body: z.string(),
+  }),
+});
+
+export const collections = { blog, work, hero };

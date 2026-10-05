@@ -2,13 +2,14 @@
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import Hero from "@/components/Hero.astro";
 ---
 
-<!-- Work: the site's landing page. Intentionally blank for now. -->
+<!-- Work: the site's landing page. The hero's headline is the page's h1. -->
 <Layout>
   <Header />
-  <main id="main-content" class="app-layout">
-    <h1 class="sr-only">Work</h1>
+  <main id="main-content">
+    <Hero />
   </main>
   <Footer />
 </Layout>

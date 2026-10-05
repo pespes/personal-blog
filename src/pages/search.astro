@@ -93,7 +93,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
   #pagefind-search {
     --pagefind-ui-font: var(--font-app);
     --pagefind-ui-text: var(--foreground);
-    --pagefind-ui-background: var(--background);
+    --pagefind-ui-background: var(--page);
     --pagefind-ui-border: var(--border);
     --pagefind-ui-primary: var(--link);
     --pagefind-ui-tag: var(--default);
@@ -133,7 +133,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     .pagefind-ui__search-clear:focus-visible {
       outline: none;
       box-shadow:
-        0 0 0 var(--ring-offset-width) var(--background),
+        0 0 0 var(--ring-offset-width) var(--page),
         0 0 0 var(--ring-focus-width) var(--focus);
     }
 
